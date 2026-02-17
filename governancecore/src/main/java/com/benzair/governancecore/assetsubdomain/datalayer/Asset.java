@@ -64,3 +64,23 @@ public class Asset {
    }
 
 }
+
+/**
+ * This class represents an information asset record in the Information Security Management System (ISMS).
+
+Practically, one `Asset` row is one thing your organization must protect, such as:
+
+- an application (`Customer API`)
+- a database (`User PII DB`)
+- a server/cloud workload
+- a critical business system
+
+In ISMS terms, this is the inventory item to which we later attach:
+- risks
+- controls
+- incidents
+- evidence
+- owners/accountability
+
+So `Asset` = your core “what are we protecting?” object.
+*/
