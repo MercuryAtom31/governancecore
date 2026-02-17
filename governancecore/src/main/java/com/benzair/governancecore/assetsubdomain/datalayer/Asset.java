@@ -66,7 +66,7 @@ public class Asset {
 }
 
 /**
- * This class represents an information asset record in the Information Security Management System (ISMS).
+ This class represents an information asset record in the Information Security Management System (ISMS).
 
 Practically, one `Asset` row is one thing your organization must protect, such as:
 
@@ -82,5 +82,5 @@ In ISMS terms, this is the inventory item to which we later attach:
 - evidence
 - owners/accountability
 
-So `Asset` = your core “what are we protecting?” object.
+So `Asset` = the core “what are we protecting?” object.
 */
