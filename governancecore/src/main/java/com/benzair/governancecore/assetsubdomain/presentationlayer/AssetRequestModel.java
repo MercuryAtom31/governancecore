@@ -3,12 +3,14 @@ package com.benzair.governancecore.assetsubdomain.presentationlayer;
 import jakarta.validation.constraints.NotBlank;
 
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 @Data // Lombok annotation to generate getters, setters, toString, equals, and hashCode methods
 @NoArgsConstructor 
 @AllArgsConstructor
+@Builder
 public class AssetRequestModel {
     
     // Validation annotation to ensure that the name field is not blank
