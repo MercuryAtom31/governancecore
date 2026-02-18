@@ -20,14 +20,28 @@ configurations {
 	}
 }
 
+// This tells Gradle:
+
+// "When you need libraries, download them from Maven Central."
+
+// Maven Central = giant online library of Java packages.
+
 repositories {
 	mavenCentral()
 }
+
+// Dependencies
+
+// This is the heart of the file.
+// This is where you declare:
+// What external tools the project needs to function.
 
 dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.flywaydb:flyway-core' 
+	implementation 'org.flywaydb:flyway-database-postgresql'
 	compileOnly 'org.projectlombok:lombok'
 	developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
@@ -39,3 +53,6 @@ dependencies {
 tasks.named('test') {
 	useJUnitPlatform()
 }
+
+
+// A build.gradle file is a build script used by Gradle, a popular build automation tool, to define how a project should be built, tested, packaged, and deployed.
