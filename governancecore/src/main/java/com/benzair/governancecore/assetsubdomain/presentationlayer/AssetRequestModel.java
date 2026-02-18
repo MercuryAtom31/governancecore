@@ -1,11 +1,14 @@
 package com.benzair.governancecore.assetsubdomain.presentationlayer;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import com.benzair.governancecore.assetsubdomain.datalayer.AssetType;
+import com.benzair.governancecore.assetsubdomain.datalayer.DataClassification;
 
 @Data // Lombok annotation to generate getters, setters, toString, equals, and hashCode methods
 @NoArgsConstructor 
@@ -14,14 +17,20 @@ import lombok.NoArgsConstructor;
 public class AssetRequestModel {
     
     // Validation annotation to ensure that the name field is not blank
-    @NotBlank(message = "Name is required") 
+    @NotBlank
     private String name;
 
-    @NotBlank(message = "Owner is required")
+    @NotBlank
     private String owner;
 
-    @NotBlank(message = "Classification is required")
-    private String classification;
+    @NotNull
+    private AssetType assetType;
+
+    @NotNull
+    private DataClassification classification;
+
+    private String description;
+
 }
 
 /**
@@ -33,5 +42,5 @@ public class AssetRequestModel {
 
     -asset name
     -owner
-    -classification
+    -asset type
 */
