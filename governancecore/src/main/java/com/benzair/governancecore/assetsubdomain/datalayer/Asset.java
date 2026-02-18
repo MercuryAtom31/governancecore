@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -41,8 +43,16 @@ public class Asset {
    @Column (nullable = false)
    private String owner;
 
+   @Enumerated(EnumType.STRING)
+   @Column(nullable = false)
+   private AssetType assetType;
+
+   @Enumerated(EnumType.STRING) // JPA annotation to specify that the enum should be stored as a string in the database
    @Column (nullable = false)
-   private String classification;
+   private DataClassification classification;
+
+   @Column
+   private String description;
 
    @Column (nullable = false, updatable = false) // This column cannot be updated after creation
    private LocalDateTime createdAt;
