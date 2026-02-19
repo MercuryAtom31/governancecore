@@ -3,6 +3,7 @@ package com.benzair.governancecore.assetsubdomain.presentationlayer;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.benzair.governancecore.assetsubdomain.datalayer.AssetType;
 import com.benzair.governancecore.assetsubdomain.datalayer.DataClassification;
 
 import lombok.NoArgsConstructor;

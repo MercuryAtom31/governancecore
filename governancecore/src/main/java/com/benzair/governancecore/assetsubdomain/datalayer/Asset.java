@@ -3,6 +3,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -34,7 +35,10 @@ public class Asset {
 
    @Id // JPA (Java Persistence API) annotation to mark this field as the primary key
    @GeneratedValue(strategy = GenerationType.UUID) // JPA annotation to specify that the ID should be generated as a UUID
-   private UUID id;
+   private UUID id; // This is the database primary key, which is auto-generated and not exposed to the service layer.
+
+   @Embedded // JPA annotation to specify that this is an embedded object, meaning its fields will be stored in the same table as the Asset entity.
+   private AssetIdentifier assetIdentifier; // This is the business ID (external uuid) that we use in the service layer, separate from the database primary key.
 
    // JPA annotation to specify that this column cannot be null
    @Column (nullable = false)
