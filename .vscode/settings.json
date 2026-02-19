@@ -1,3 +1,9 @@
+// VS Code project-specific configuration.
+// This setting controls how VS Code reacts when build files
+// like build.gradle are modified.
+//
+// "interactive" means VS Code will prompt the user
+// before reloading or updating the Java build configuration.
 {
     "java.configuration.updateBuildConfiguration": "interactive"
 }
