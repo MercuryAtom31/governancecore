@@ -55,4 +55,21 @@ tasks.named('test') {
 }
 
 
-// A build.gradle file is a build script used by Gradle, a popular build automation tool, to define how a project should be built, tested, packaged, and deployed.
+// A build.gradle file is a build script used by Gradle, a popular build automation tool, 
+// to define how a project should be built, tested, packaged, and deployed.
+
+// build.gradle = Build configuration (how the app is compiled + packaged)
+
+// This file answers questions like:
+
+// What dependencies do I need? (Spring Web, JPA, Flyway, Postgres driver…)
+
+// What Java version should I compile with?
+
+// How do I build the app? (tasks like build, test, bootJar)
+
+// Plugins (Spring Boot plugin, dependency management, etc.)
+
+// build.gradle = What the application IS made of.
+
+// build.gradle defines the application's dependencies and build process.
