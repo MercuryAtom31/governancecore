@@ -1,16 +1,22 @@
 spring:
   application:
     name: governancecore
+
   datasource:
     url: ${DB_URL:jdbc:postgresql://localhost:5432/governancecore}
     username: ${DB_USERNAME:postgres}
     password: ${DB_PASSWORD:postgres}
     driver-class-name: org.postgresql.Driver
+
   jpa:
     hibernate:
       ddl-auto: none
     properties:
       hibernate:
         dialect: org.hibernate.dialect.PostgreSQLDialect
+
   flyway:
     enabled: true
+    locations: classpath:db/migration
+    validate-on-migrate: true
+    baseline-on-migrate: false
