@@ -3,6 +3,8 @@ package com.benzair.governancecore.assetsubdomain.presentationlayer;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.benzair.governancecore.assetsubdomain.datalayer.DataClassification;
+
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -17,7 +19,9 @@ public class AssetResponseModel {
     private UUID id;
     private String name;
     private String owner;
-    private String classification;
+    private AssetType assetType;
+    private DataClassification classification;
+    private String description;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 }
