@@ -17,14 +17,14 @@ import lombok.Data;
 @AllArgsConstructor
 public class AssetResponseModel {
 
-    private UUID id;
+    private UUID assetId; // This is the business ID (external uuid) that we use in the service layer, separate from the database primary key.
     private String name;
     private String owner;
     private AssetType assetType;
     private DataClassification classification;
     private String description;
-    private LocalDateTime createdAt;
-    private LocalDateTime updatedAt;
+    private LocalDateTime createdAt; // Used for auditing and tracking when the asset was created.
+    private LocalDateTime updatedAt; // Used for auditing and tracking when the asset was last updated.
 }
 
 /**
