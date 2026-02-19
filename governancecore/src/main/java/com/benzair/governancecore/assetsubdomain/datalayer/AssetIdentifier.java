@@ -8,7 +8,7 @@ import lombok.Data;
 @Embeddable // JPA annotation to mark this class as an embeddable object, meaning its fields will be stored in the same table as the Asset entity.
 @Data
 @AllArgsConstructor
-public class AssetIdentifier {
+public class AssetIdentifier { // AssetIdentifier is a business identifier, not the database ID.
     
     // JPA annotation to specify that this column is named "asset_id", cannot be null, must be unique, and has a maximum length of 36 characters (suitable for UUID strings).
     @Column(name = "asset_id", nullable = false, unique = true, length = 36)
@@ -33,4 +33,30 @@ which is a unique identifier for an asset.
 It is marked as @Embeddable, meaning it can be embedded into another entity (like Asset) 
 and its fields will be stored in the same table as the owning entity. 
 The assetId is generated as a UUID string to ensure uniqueness across all assets.
+
+So we now have two identities:
+
+1) Database Identity (internal)
+private UUID id;
+
+Used by:
+
+-Hibernate
+-Foreign keys
+-Internal joins
+
+Frontend should NEVER see this.
+
+2) Business Identity (external)
+private AssetIdentifier assetIdentifier;
+
+Used by:
+
+-API responses
+-URLs
+-Service layer
+-Logs
+-Auditing
+
+This is what your frontend should use.
 */
