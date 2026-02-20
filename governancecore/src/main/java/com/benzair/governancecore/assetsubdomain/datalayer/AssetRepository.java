@@ -42,4 +42,15 @@ Spring gives you:
 -Sorting
 
 You did not write any SQL. Spring generates it.
+
+--Repository.save()
+
+Now Spring Data JPA takes that entity and:
+
+-Generates SQL
+-Inserts it into PostgreSQL
+-Triggers @PrePersist or @PreUpdate
+-Stores it in the database
+
+At this point, the asset officially exists in the ISMS system.
 */
