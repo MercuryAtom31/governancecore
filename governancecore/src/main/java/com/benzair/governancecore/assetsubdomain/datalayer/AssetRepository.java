@@ -5,9 +5,41 @@ import java.util.UUID;
 import java.util.Optional;
 
 public interface AssetRepository extends  JpaRepository<Asset, UUID> {
-    // JpaRepository provides basic CRUD operations and pagination for Asset entity.
 
+    /*
+    This is a custom query method.
+    You are saying:
+    "Spring, please find an Asset using its external business ID."
+    */
     Optional<Asset> findByAssetIdentifier_AssetId(String assetId);
-    // Custom query method to find an Asset by its business ID (external uuid) using the embedded AssetIdentifier.
     
 }
+
+/*
+What Is AssetRepository?
+
+Think of AssetRepository as:
+The bridge between the Java code and the database for Assets.
+It is the data access boundary.
+
+It allows the service layer to:
+-Save assets
+-Fetch assets
+-Delete assets
+-Search assets
+
+Without ever writing SQL manually.
+
+What do you get automatically?
+
+Spring gives you:
+
+-save()
+-findById()
+-findAll()
+-delete()
+-Pagination
+-Sorting
+
+You did not write any SQL. Spring generates it.
+*/
