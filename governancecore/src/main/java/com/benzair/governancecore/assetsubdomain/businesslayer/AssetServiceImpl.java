@@ -15,32 +15,35 @@ import com.benzair.governancecore.exceptions.ResourceNotFoundException;
 @Service
 public class AssetServiceImpl implements AssetService {
 
-        private final AssetRepository assetRepository;
-        private final AssetRequestMapper assetRequestMapper;
-        private final AssetResponseMapper assetResponseMapper;
-        
-        public AssetServiceImpl (
+    private final AssetRepository assetRepository;
+    private final AssetRequestMapper assetRequestMapper;
+    private final AssetResponseMapper assetResponseMapper;
+
+    public AssetServiceImpl(
             AssetRepository assetRepository,
             AssetRequestMapper assetRequestMapper,
             AssetResponseMapper assetResponseMapper
-        ) {
-            this.assetRepository = assetRepository;
-            this.assetRequestMapper = assetRequestMapper;
-            this.assetResponseMapper = assetResponseMapper;
-        }
-
-        public List<AssetResponseModel> getAllAssets() {
-            List<Asset> assets = assetRepository.findAll();
-            return assetResponseMapper.entityToResponseModelList(assets);
-        }
-
-        public AssetResponseModel getAssetByAssetId(String assetId) {
-            Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
-            return assetResponseMapper.entityToResponseModel(asset);
-        }
-
-        public void deleteAssetByAssetId(String assetId) {
-            
-        }
+    ) {
+        this.assetRepository = assetRepository;
+        this.assetRequestMapper = assetRequestMapper;
+        this.assetResponseMapper = assetResponseMapper;
     }
+
+    public List<AssetResponseModel> getAllAssets() {
+        List<Asset> assets = assetRepository.findAll();
+        return assetResponseMapper.entityToResponseModelList(assets);
+    }
+
+    public AssetResponseModel getAssetByAssetId(String assetId) {
+        Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
+        return assetResponseMapper.entityToResponseModel(asset);
+    }
+
+    public void deleteAssetByAssetId(String assetId) {
+        Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
+                .orElseThrow(() =  >   new ResourceNotFoundException("Asset not found with assetId: " + assetId));
+
+        assetRepository.delete(asset);
+    }
+}
