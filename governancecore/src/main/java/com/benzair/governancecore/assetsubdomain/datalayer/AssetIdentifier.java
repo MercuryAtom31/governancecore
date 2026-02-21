@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import java.util.UUID;
 
 @Embeddable // JPA annotation to mark this class as an embeddable object, meaning its fields will be stored in the same table as the Asset entity.
 @Data
@@ -11,14 +12,15 @@ import lombok.Data;
 public class AssetIdentifier { // AssetIdentifier is a business identifier, not the database ID.
     
     // JPA annotation to specify that this column is named "asset_id", cannot be null, must be unique, and has a maximum length of 36 characters (suitable for UUID strings).
-    @Column(name = "asset_id", nullable = false, unique = true, length = 36)
-    private String assetId;
+    @Column(name = "asset_id", nullable = false, unique = true)
+    private UUID assetId;
 
     /*
     No-arg constructor generates a random UUID string automatically.
     */
     public AssetIdentifier() {
-        this.assetId = java.util.UUID.randomUUID().toString();
+        // The following means: "generate UUID, then convert it to text."
+        this.assetId = java.util.UUID.randomUUID();
     }
 }
 

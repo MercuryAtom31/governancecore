@@ -1,10 +1,10 @@
 package com.benzair.governancecore.assetsubdomain.datamapperlayer;
 
-import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetRequestModel;
-import com.benzair.governancecore.assetsubdomain.datalayer.Asset;
-
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+
+import com.benzair.governancecore.assetsubdomain.datalayer.Asset;
+import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetRequestModel;
 /*
 AssetRequestMapper
 Responsibility:
@@ -20,6 +20,7 @@ It tells MapStruct:
 public interface AssetRequestMapper {
     
     // This is saying: "Even if the request contains a field named id, DO NOT copy it into the entity."
+    // In the target object (Asset), ignore the field called id.
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "assetIdentifier", ignore = true)
     @Mapping(target = "createdAt", ignore = true)
