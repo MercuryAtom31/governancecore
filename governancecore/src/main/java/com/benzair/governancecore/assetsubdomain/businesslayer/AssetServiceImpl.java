@@ -15,57 +15,32 @@ import com.benzair.governancecore.exceptions.ResourceNotFoundException;
 @Service
 public class AssetServiceImpl implements AssetService {
 
-    private final AssetRepository assetRepository;
-    private final AssetRequestMapper assetRequestMapper;
-    private final AssetResponseMapper assetResponseMapper;
-
-    public AssetServiceImpl(AssetRepository assetRepository, AssetRequestMapper assetRequestMapper, AssetResponseMapper assetResponseMapper) {
-        this.assetRepository = assetRepository;
-        this.assetRequestMapper = assetRequestMapper;
-        this.assetResponseMapper = assetResponseMapper;
-    }
-
-    @Override
-    public List<AssetResponseModel> getAllAssets() {
-        List<Asset> assets = assetRepository.findAll();
-        return assetResponseMapper.entityToResponseModelList(assets);
-    }
-
-    @Override
-    public AssetResponseModel getAssetByAssetId(String assetId) {
-        Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with id: " + assetId));
-        return assetResponseMapper.entityToResponseModel(asset);
-    }
-
-    @Override
-    public void deleteAssetByAssetId(String assetId) {
-        Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with id: " + assetId));
-        assetRepository.delete(asset);
-    }
-
-    @Override
-    public AssetResponseModel addAsset(AssetRequestModel assetRequestModel) {
-        Asset asset = assetRequestMapper.requestModelToEntity(assetRequestModel);
-        // Generate a unique identifier for the new asset
-        String generatedAssetId = UUID.randomUUID().toString();
-        AssetIdentifier assetIdentifier = new AssetIdentifier(generatedAssetId);
-        asset.setAssetIdentifier(assetIdentifier);
-        Asset savedAsset = assetRepository.save(asset);
-        return assetResponseMapper.entityToResponseModel(savedAsset);
-    }
-
-    @Override
-    public AssetResponseModel updateAsset(String assetId, AssetRequestModel assetRequestModel) {
-        Asset existingAsset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with id: " + assetId));
+        private final AssetRepository assetRepository;
+        private final AssetRequestMapper assetRequestMapper;
+        private final AssetResponseMapper assetResponseMapper;
         
-        // Update the existing asset's fields based on the request model
-        existingAsset.setName(assetRequestModel.getName());
-        existingAsset.setDescription(assetRequestModel.getDescription());
-        existingAsset.setType(assetRequestModel.getType());
-        existingAsset.setDataClassification(assetRequestModel.getDataClassification());
-        Asset updatedAsset = assetRepository.save(existingAsset);
-        return assetResponseMapper.entityToResponseModel(updatedAsset);
+        public AssetServiceImpl (
+            AssetRepository assetRepository,
+            AssetRequestMapper assetRequestMapper,
+            AssetResponseMapper assetResponseMapper
+        ) {
+            this.assetRepository = assetRepository;
+            this.assetRequestMapper = assetRequestMapper;
+            this.assetResponseMapper = assetResponseMapper;
+        }
+
+        public List<AssetResponseModel> getAllAssets() {
+            List<Asset> assets = assetRepository.findAll();
+            return assetResponseMapper.entityToResponseModelList(assets);
+        }
+
+        public AssetResponseModel getAssetByAssetId(String assetId) {
+            Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
+            return assetResponseMapper.entityToResponseModel(asset);
+        }
+
+        public void deleteAssetByAssetId(String assetId) {
+            
+        }
     }
