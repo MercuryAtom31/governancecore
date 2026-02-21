@@ -2,6 +2,8 @@ package com.benzair.governancecore.assetsubdomain.businesslayer;
 
 import java.util.List;
 import java.util.UUID;
+
+import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
 import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetRequestModel;
 import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetResponseModel;
@@ -40,7 +42,7 @@ public class AssetServiceImpl implements AssetService {
         return assetResponseMapper.entityToResponseModel(asset);
     }
 
-    public void deleteAssetByAssetId(String assetId) {
+    public void deleteAssetByAssetId(UUID assetId) {
         Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
                 .orElseThrow(() =  >   new ResourceNotFoundException("Asset not found with assetId: " + assetId));
 
@@ -58,7 +60,20 @@ public class AssetServiceImpl implements AssetService {
         */
         Asset savedAsset = assetRepository.save(asset);
         return assetResponseMapper.entityToResponseModel(savedAsset);
-        
+    }
+
+    public AssetResponseModel updateAsset(AssetRequestModel request, UUID assetId){
+        Asset existingAsset = assetRepository.findByAssetIdentifier_AssetId(assetId)
+        .orElseThrow(() -> new NotFoundException("Asset not found."));
+
+        // Updating fields of existing asset with the its new content.
+        existingAsset.setName(request.getName());
+        existingAsset.setOwner(request.getOwner());
+        existingAsset.setAssetType(request.getAssetType());
+        existingAsset.setClassification(request.getClassification());
+        existingAsset.setDescription(request.getDescription());
+
+        return assetResponseMapper.entityToResponseModel(assetRepository.save(existingAsset));
     }
 }
 
