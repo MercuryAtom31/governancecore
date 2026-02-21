@@ -48,7 +48,7 @@ public class Asset {
    private String owner;
 
    @Enumerated(EnumType.STRING)
-   @Column(nullable = false)
+   @Column(nullable = false, name = "asset_type") // JPA annotation to specify that this column is named "asset_type" in the database
    private AssetType assetType;
 
    @Enumerated(EnumType.STRING) // JPA annotation to specify that the enum should be stored as a string in the database
@@ -58,10 +58,10 @@ public class Asset {
    @Column
    private String description;
 
-   @Column (nullable = false, updatable = false) // This column cannot be updated after creation
+   @Column (nullable = false, updatable = false, name = "created_at") // This column cannot be updated after creation
    private LocalDateTime createdAt;
 
-   @Column (nullable = false)
+   @Column (nullable = false, name = "updated_at") // This column will be updated every time the record is updated
    private LocalDateTime updatedAt;
 
    // @PrePersist runs only when that row is inserted the first time.
