@@ -46,4 +46,21 @@ public class AssetServiceImpl implements AssetService {
 
         assetRepository.delete(asset);
     }
+
+    public AssetResponseModel addAsset(AssetRequestModel request){
+        /*
+        asset is the in-memory object before persistence (mapped from request).
+        */
+        Asset asset = assetRequestMapper.requestModelToEntity(request);
+        /*
+        savedAsset is the object returned by repository after DB persistence lifecycle.
+        Contains final persisted state (generated IDs, timestamps, etc.).
+        */
+        Asset savedAsset = assetRepository.save(asset);
+        return assetResponseMapper.entityToResponseModel(savedAsset);
+        
+    }
 }
+
+// The service flow should be:
+// request DTO -> entity -> save -> response DTO.
