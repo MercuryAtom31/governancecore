@@ -11,7 +11,7 @@ import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetRequestMap
 import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetResponseMapper;
 import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetRequestModel;
 import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetResponseModel;
-import com.benzair.governancecore.src.exceptions.ResourceNotFoundException;
+
 
 @Service
 public class AssetServiceImpl implements AssetService {

@@ -1,4 +1,4 @@
-package com.benzair.governancecore.src.exceptions;
+package exceptions;
 
 
 public class ResourceNotFoundException extends RuntimeException {
