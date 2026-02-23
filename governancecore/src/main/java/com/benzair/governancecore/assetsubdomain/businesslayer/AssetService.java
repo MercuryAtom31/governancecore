@@ -8,12 +8,12 @@ public interface AssetService {
     
     List<AssetResponseModel> getAllAssets();
 
-    AssetResponseModel getAssetByAssetId(String assetId);
+    AssetResponseModel getAssetByAssetId(UUID assetId);
 
-    void deleteAssetByAssetId(String assetId);
+    void deleteAssetByAssetId(UUID assetId);
 
     AssetResponseModel addAsset(AssetRequestModel assetRequestModel);
 
-    AssetResponseModel updateAsset(String assetId, AssetRequestModel assetRequestModel);
+    AssetResponseModel updateAsset(UUID assetId, AssetRequestModel assetRequestModel);
 
 }
