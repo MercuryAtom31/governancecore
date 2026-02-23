@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
+import exceptions.ResourceNotFoundException;
+
 import com.benzair.governancecore.assetsubdomain.datalayer.Asset;
 import com.benzair.governancecore.assetsubdomain.datalayer.AssetRepository;
 import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetRequestMapper;
