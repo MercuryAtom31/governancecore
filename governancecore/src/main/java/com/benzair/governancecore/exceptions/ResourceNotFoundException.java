@@ -1,4 +1,4 @@
-package exceptions;
+package com.benzair.governancecore.exceptions;
 
 public class ResourceNotFoundException extends RuntimeException {
         public ResourceNotFoundException(String message) {

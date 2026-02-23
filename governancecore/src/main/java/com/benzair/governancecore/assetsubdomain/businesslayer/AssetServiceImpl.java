@@ -5,8 +5,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import exceptions.ResourceNotFoundException;
-
+import com.benzair.governancecore.exceptions.ResourceNotFoundException;
 import com.benzair.governancecore.assetsubdomain.datalayer.Asset;
 import com.benzair.governancecore.assetsubdomain.datalayer.AssetRepository;
 import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetRequestMapper;
@@ -32,17 +31,20 @@ public class AssetServiceImpl implements AssetService {
         this.assetResponseMapper = assetResponseMapper;
     }
 
+    @Override
     public List<AssetResponseModel> getAllAssets() {
         List<Asset> assets = assetRepository.findAll();
         return assetResponseMapper.entityToResponseModelList(assets);
     }
 
+    @Override
     public AssetResponseModel getAssetByAssetId(UUID assetId) {
         Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
         return assetResponseMapper.entityToResponseModel(asset);
     }
 
+    @Override
     public void deleteAssetByAssetId(UUID assetId) {
         Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
@@ -50,6 +52,7 @@ public class AssetServiceImpl implements AssetService {
         assetRepository.delete(asset);
     }
 
+    @Override
     public AssetResponseModel addAsset(AssetRequestModel request) {
         /*
         asset is the in-memory object before persistence (mapped from request).
@@ -63,6 +66,7 @@ public class AssetServiceImpl implements AssetService {
         return assetResponseMapper.entityToResponseModel(savedAsset);
     }
 
+    @Override
     public AssetResponseModel updateAsset(AssetRequestModel request, UUID assetId) {
         Asset existingAsset = assetRepository.findByAssetIdentifier_AssetId(assetId)
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
