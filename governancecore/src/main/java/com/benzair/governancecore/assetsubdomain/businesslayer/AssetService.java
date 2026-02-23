@@ -1,6 +1,8 @@
 package com.benzair.governancecore.assetsubdomain.businesslayer;
 
 import java.util.List;
+import java.util.UUID;
+
 import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetRequestModel;
 import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetResponseModel;
 
@@ -14,6 +16,6 @@ public interface AssetService {
 
     AssetResponseModel addAsset(AssetRequestModel assetRequestModel);
 
-    AssetResponseModel updateAsset(UUID assetId, AssetRequestModel assetRequestModel);
+    AssetResponseModel updateAsset(AssetRequestModel assetRequestModel, UUID assetId);
 
 }
