@@ -3,15 +3,15 @@ package com.benzair.governancecore.assetsubdomain.businesslayer;
 import java.util.List;
 import java.util.UUID;
 
-import org.springframework.data.crossstore.ChangeSetPersister.NotFoundException;
 import org.springframework.stereotype.Service;
-import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetRequestModel;
-import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetResponseModel;
+
 import com.benzair.governancecore.assetsubdomain.datalayer.Asset;
-import com.benzair.governancecore.assetsubdomain.datalayer.AssetIdentifier;
+import com.benzair.governancecore.assetsubdomain.datalayer.AssetRepository;
 import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetRequestMapper;
 import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetResponseMapper;
-import com.benzair.governancecore.assetsubdomain.datalayer.AssetRepository;
+import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetRequestModel;
+import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetResponseModel;
+import com.benzair.governancecore.exceptions.ResourceNotFoundException;
 
 @Service
 public class AssetServiceImpl implements AssetService {
@@ -37,18 +37,18 @@ public class AssetServiceImpl implements AssetService {
 
     public AssetResponseModel getAssetByAssetId(UUID assetId) {
         Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-                .orElseThrow () -> new ResourceNotFoundException("Asset not found with assetId: " + assetId);
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
         return assetResponseMapper.entityToResponseModel(asset);
     }
 
     public void deleteAssetByAssetId(UUID assetId) {
         Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-                .orElseThrow () =  >   new ResourceNotFoundException("Asset not found with assetId: " + assetId);
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
 
         assetRepository.delete(asset);
     }
 
-    public AssetResponseModel addAsset(AssetRequestModel request){
+    public AssetResponseModel addAsset(AssetRequestModel request) {
         /*
         asset is the in-memory object before persistence (mapped from request).
         */
@@ -61,9 +61,9 @@ public class AssetServiceImpl implements AssetService {
         return assetResponseMapper.entityToResponseModel(savedAsset);
     }
 
-    public AssetResponseModel updateAsset(AssetRequestModel request, UUID assetId){
+    public AssetResponseModel updateAsset(AssetRequestModel request, UUID assetId) {
         Asset existingAsset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-        .orElseThrow () -> new NotFoundException("Asset not found.");
+                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
 
         // Updating fields of existing asset with the its new content.
         existingAsset.setName(request.getName());
@@ -72,7 +72,8 @@ public class AssetServiceImpl implements AssetService {
         existingAsset.setClassification(request.getClassification());
         existingAsset.setDescription(request.getDescription());
 
-        return assetResponseMapper.entityToResponseModel(assetRepository.save(existingAsset));
+        Asset savedAsset = assetRepository.save(existingAsset);
+        return assetResponseMapper.entityToResponseModel(savedAsset);
     }
 }
 
