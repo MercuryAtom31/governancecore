@@ -12,7 +12,6 @@ import com.benzair.governancecore.assetsubdomain.datalayer.AssetIdentifier;
 import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetRequestMapper;
 import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetResponseMapper;
 import com.benzair.governancecore.assetsubdomain.datalayer.AssetRepository;
-import com.benzair.governancecore.exceptions.ResourceNotFoundException;
 
 @Service
 public class AssetServiceImpl implements AssetService {
@@ -36,15 +35,15 @@ public class AssetServiceImpl implements AssetService {
         return assetResponseMapper.entityToResponseModelList(assets);
     }
 
-    public AssetResponseModel getAssetByAssetId(String assetId) {
+    public AssetResponseModel getAssetByAssetId(UUID assetId) {
         Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-                .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
+                .orElseThrow () -> new ResourceNotFoundException("Asset not found with assetId: " + assetId);
         return assetResponseMapper.entityToResponseModel(asset);
     }
 
     public void deleteAssetByAssetId(UUID assetId) {
         Asset asset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-                .orElseThrow(() =  >   new ResourceNotFoundException("Asset not found with assetId: " + assetId));
+                .orElseThrow () =  >   new ResourceNotFoundException("Asset not found with assetId: " + assetId);
 
         assetRepository.delete(asset);
     }
@@ -64,7 +63,7 @@ public class AssetServiceImpl implements AssetService {
 
     public AssetResponseModel updateAsset(AssetRequestModel request, UUID assetId){
         Asset existingAsset = assetRepository.findByAssetIdentifier_AssetId(assetId)
-        .orElseThrow(() -> new NotFoundException("Asset not found."));
+        .orElseThrow () -> new NotFoundException("Asset not found.");
 
         // Updating fields of existing asset with the its new content.
         existingAsset.setName(request.getName());

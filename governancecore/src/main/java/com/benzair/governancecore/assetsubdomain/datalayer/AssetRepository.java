@@ -11,7 +11,7 @@ public interface AssetRepository extends  JpaRepository<Asset, UUID> {
     You are saying:
     "Spring, please find an Asset using its external business ID."
     */
-    Optional<Asset> findByAssetIdentifier_AssetId(String assetId);
+    Optional<Asset> findByAssetIdentifier_AssetId(UUID assetId);
     
 }
 
