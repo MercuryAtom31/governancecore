@@ -64,12 +64,18 @@ public class Asset {
    @Column (nullable = false, name = "updated_at") // This column will be updated every time the record is updated
    private LocalDateTime updatedAt;
 
+   // @PrePersist runs right before JPA inserts a new Asset
    // @PrePersist runs only when that row is inserted the first time.
    @PrePersist // JPA annotation to specify that this method should be called before the entity is persisted (saved for the first time)
    private void prePersist() {
       LocalDateTime now = LocalDateTime.now(); // Get the current time
       createdAt = now; // Set createdAt to the current time when the entity is first persisted
       updatedAt = now; // Set updatedAt to the current time when the entity is first persisted
+   
+      // Every new asset gets a stable external ID automatically.
+      if (assetIdentifier == null) {
+         assetIdentifier = new AssetIdentifier();
+      }
    }
 
    @PreUpdate // JPA annotation to specify that this method should be called before the entity is updated
