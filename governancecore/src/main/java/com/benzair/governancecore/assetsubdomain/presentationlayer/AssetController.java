@@ -1,17 +1,15 @@
 package com.benzair.governancecore.assetsubdomain.presentationlayer;
 
 import com.benzair.governancecore.assetsubdomain.businesslayer.AssetService;
-
 import org.springframework.http.ResponseEntity;
-// import org.springframework.web.bind.annotation.GetMapping;
-// import org.springframework.web.bind.annotation.PostMapping;
-// import org.springframework.web.bind.annotation.RequestBody;
-// import org.springframework.web.bind.annotation.RequestMapping;
-// import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
 
 import java.util.List;
+
+import com.benzair.governancecore.exceptions.InvalidInputException;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/v1/assets")
@@ -36,12 +34,8 @@ public class AssetController {
     }
 
     @PostMapping()
-    public AssetResponseModel addAsset(@RequestBody AssetRequestModel assetRequestModel){
-        try{
+    public ResponseEntity<AssetResponseModel> addAsset(@Valid @RequestBody AssetRequestModel assetRequestModel){
             AssetResponseModel createdAsset = assetService.addAsset(assetRequestModel);
-            return new ResponseEntity<>(createdAsset, HttpStatus.CREATED);
-        } catch (InvalidInputException exception) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
-        }
+            return ResponseEntity.status(HttpStatus.CREATED).body(createdAsset);
     }
 }
