@@ -7,8 +7,6 @@ import org.springframework.http.HttpStatus;
 
 import java.util.List;
 
-import com.benzair.governancecore.exceptions.InvalidInputException;
-
 import jakarta.validation.Valid;
 
 @RestController
