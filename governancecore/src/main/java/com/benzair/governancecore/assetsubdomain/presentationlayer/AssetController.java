@@ -24,12 +24,6 @@ public class AssetController {
     public ResponseEntity<List<AssetResponseModel>> getAllAssets(){
         
         List<AssetResponseModel> assets = assetService.getAllAssets();
-
-        //ENG-US: (||) is Shift + key right to the left of the enter key.
-        if(assets == null || assets.isEmpty()){
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
-        }
-
         return ResponseEntity.ok(assets);
     }
 
