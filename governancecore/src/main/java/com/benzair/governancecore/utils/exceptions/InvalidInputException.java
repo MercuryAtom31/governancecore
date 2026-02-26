@@ -1,4 +1,4 @@
-package com.benzair.governancecore.exceptions;
+package com.benzair.governancecore.utils.exceptions;
 
 public class InvalidInputException extends RuntimeException {
 

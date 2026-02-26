@@ -1,4 +1,4 @@
-package com.benzair.governancecore.exceptions;
+package com.benzair.governancecore.utils.exceptions;
 
 /*
 The following is a custom exception class that extends RuntimeException. 
