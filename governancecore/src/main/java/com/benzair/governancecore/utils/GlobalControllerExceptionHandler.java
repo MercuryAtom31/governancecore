@@ -16,19 +16,22 @@ It does NOT throw errors.
 
 It catches them.
 */
+// @RestControllerAdvice = formats the error response.
 @RestControllerAdvice // This annotation tells Spring that this class will handle exceptions globally for all controllers.
 public class GlobalControllerExceptionHandler {
     
     @ExceptionHandler(InvalidInputException.class) // This annotation tells Spring that this method should be called when an InvalidInputException is thrown.
-    public ResponseEntity<ApiError> handleInvalid(InvalidInputException exception){
+    public ResponseEntity<ApiError> handleInvalidInputException(InvalidInputException exception){
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ApiError(exception.getMessage()));
     }
 
     @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFound(ResourceNotFoundException exception)
+    public ResponseEntity<ApiError> handleNotFoundException(ResourceNotFoundException exception){
     return ResponseEntity.status(HttpStatus.NOT_FOUND)
                          .body(new ApiError(exception.getMessage()));
+    }
+        
 }
 
 /*
