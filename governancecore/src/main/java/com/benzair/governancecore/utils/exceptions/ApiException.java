@@ -4,9 +4,9 @@ import org.springframework.http.HttpStatus;
 
 public abstract class ApiException extends RuntimeException{
 
-    private final HttpStatus status = null;
+    private final HttpStatus status;
 
-    public void ApiExcepton(HttpStatus status, String message){
+    public ApiExcepton(HttpStatus status, String message){
         super(message);
         this.status = status;
     }

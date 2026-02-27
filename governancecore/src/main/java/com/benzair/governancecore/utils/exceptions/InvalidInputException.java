@@ -1,9 +1,11 @@
 package com.benzair.governancecore.utils.exceptions;
 
+import org.springframework.http.HttpStatus;
+
 public class InvalidInputException extends ApiException {
 
     public InvalidInputException(String message){
-        super(HttpStatus.INVALID_INPUT, message);
+        super(HttpStatus.UNPROCESSABLE_ENTITY, message);
     }
 }
 

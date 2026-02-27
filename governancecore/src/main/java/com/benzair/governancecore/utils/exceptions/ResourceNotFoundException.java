@@ -1,5 +1,6 @@
 package com.benzair.governancecore.utils.exceptions;
 
+import org.springframework.http.HttpStatus;
 /*
 The following is a custom exception class that extends RuntimeException. 
 It provides two constructors: one that accepts a message 
