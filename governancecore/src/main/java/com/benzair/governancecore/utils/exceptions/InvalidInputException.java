@@ -1,13 +1,9 @@
 package com.benzair.governancecore.utils.exceptions;
 
-public class InvalidInputException extends RuntimeException {
+public class InvalidInputException extends ApiException {
 
     public InvalidInputException(String message){
-        super(message);
-    }
-    
-    public InvalidInputException(String message, Throwable cause){
-        super(message, cause);
+        super(HttpStatus.INVALID_INPUT, message);
     }
 }
 

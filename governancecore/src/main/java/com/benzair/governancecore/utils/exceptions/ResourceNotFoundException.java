@@ -14,7 +14,7 @@ What is RuntimeException?
 RuntimeException is a built-in Java class that represents 
 unchecked exceptions — errors that happen during program execution and do NOT need to be declared or caught explicitly.
 */
-public class ResourceNotFoundException extends RuntimeException {
+public class ResourceNotFoundException extends ApiException {
 
     /*
     What does this do?
@@ -22,16 +22,7 @@ public class ResourceNotFoundException extends RuntimeException {
     throw new ResourceNotFoundException("Asset with ID 123 not found");
     */
         public ResourceNotFoundException(String message) {
-        super(message);
-    }
-
-    /*
-    This version allows us to include:
-    -A message
-    -The original exception that caused this one
-    */
-    public ResourceNotFoundException(String message, Throwable cause) {
-        super(message, cause);
+        super(HttpStatus.NOT_FOUND, message);
     }
 }
 
