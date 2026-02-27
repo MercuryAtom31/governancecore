@@ -181,6 +181,69 @@ Business logic demonstrated:
 
 ---
 
+### 🔎 Risk Assessment Methodology
+
+Governance Core implements a **Semi-Quantitative Risk Assessment approach** aligned with ISO 27001 practices.
+
+### Why Semi-Quantitative?
+
+There are three common approaches to measuring risk:
+
+| Approach | Description | Why Not Used for MVP |
+|-----------|-------------|----------------------|
+| Quantitative | Uses financial data and probabilities to calculate expected monetary loss | Requires reliable financial and statistical data that most organizations do not realistically possess |
+| Qualitative | Uses descriptive categories (Low / Medium / High) without numeric structure | Too subjective and lacks prioritization granularity |
+| **Semi-Quantitative** | Uses numeric scales to represent categories (e.g., 1–5) and calculates a derived score | Balanced, practical, and widely used in ISO 27001 implementations |
+
+The MVP uses:
+
+Risk Score = Likelihood × Impact
+
+Where:
+
+- Likelihood: integer (1–5)
+- Impact: integer (1–5)
+- Risk Score: derived integer (1–25)
+
+### Risk Level Mapping
+
+Risk scores are mapped to severity levels:
+
+| Score Range | Risk Level |
+|--------------|------------|
+| 1–5 | LOW |
+| 6–10 | MEDIUM |
+| 11–15 | HIGH |
+| 16–25 | CRITICAL |
+
+This allows:
+
+- Risk prioritization
+- Executive-friendly reporting
+- Structured decision-making
+- Audit traceability
+
+### Governance Rationale
+
+Semi-quantitative assessment is commonly used in ISO 27001 risk matrices because:
+
+- Precise financial loss estimates are often unreliable
+- Overly precise numbers can create a false sense of certainty
+- Organizations need structured prioritization rather than actuarial modeling
+
+This approach provides sufficient rigor for governance while remaining practical.
+
+### Future Enhancement (Optional)
+
+The architecture can later support:
+
+- Dynamic scoring adjustments based on asset classification
+- Quantitative financial modeling (e.g., Annual Loss Expectancy)
+- Custom risk calculation formulas per organization
+
+For MVP scope, semi-quantitative provides the optimal balance between realism and implementation complexity.
+---
+
 ## 🧱 Step 4 – Control Mapping (Statement of Applicability)
 
 ### User Action:
