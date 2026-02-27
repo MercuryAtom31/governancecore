@@ -1,56 +1,41 @@
 package com.benzair.governancecore.utils;
 
+import java.util.stream.Collectors;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.context.request.WebRequest;
 
-import com.benzair.governancecore.utils.exceptions.InvalidInputException;
-import com.benzair.governancecore.utils.exceptions.ResourceNotFoundException;
+import com.benzair.governancecore.utils.exceptions.ApiException;
 
-/*
-GlobalControllerExceptionHandler represents:
-"If any of those exceptions are thrown, I decide what response to return."
-
-It does NOT throw errors.
-
-It catches them.
-*/
-// @RestControllerAdvice = formats the error response.
-@RestControllerAdvice // This annotation tells Spring that this class will handle exceptions globally for all controllers.
+@RestControllerAdvice
 public class GlobalControllerExceptionHandler {
-    
-    @ExceptionHandler(InvalidInputException.class) // This annotation tells Spring that this method should be called when an InvalidInputException is thrown.
-    public ResponseEntity<ApiError> handleInvalidInputException(InvalidInputException exception){
+
+    @ExceptionHandler(ApiException.class)
+    public ResponseEntity<HttpErrorInfo> handleApiException(ApiException exception, WebRequest request) {
+        HttpStatus status = exception.getStatus();
+        return ResponseEntity.status(status)
+                .body(new HttpErrorInfo(status, request.getDescription(false), exception.getMessage()));
+    }
+
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<HttpErrorInfo> handleValidationException(MethodArgumentNotValidException exception, WebRequest request) {
+        String message = exception.getBindingResult()
+                .getFieldErrors()
+                .stream()
+                .map(err -> err.getField() + ": " + err.getDefaultMessage())
+                .collect(Collectors.joining("; "));
+
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
-                .body(new ApiError(exception.getMessage()));
+                .body(new HttpErrorInfo(HttpStatus.BAD_REQUEST, request.getDescription(false), message));
     }
 
-    @ExceptionHandler(ResourceNotFoundException.class)
-    public ResponseEntity<ApiError> handleNotFoundException(ResourceNotFoundException exception){
-    return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                         .body(new ApiError(exception.getMessage()));
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<HttpErrorInfo> handleUnexpectedException(Exception exception, WebRequest request) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new HttpErrorInfo(HttpStatus.INTERNAL_SERVER_ERROR, request.getDescription(false), "Unexpected server error"));
     }
-        
 }
-
-/*
-GlobalControllerExceptionHandler
-
-This class:
-
--Catches the exception
--Reads its type
--Reads its message
--Decides the HTTP status
--Builds the response body
--Sends it back to the client
-
-It packages everything properly, so to speak.
-
-Custom exception classes:
--Describe what went wrong.
-
-Global exception handler:
--Decides how that error is presented to the outside world.
-*/
