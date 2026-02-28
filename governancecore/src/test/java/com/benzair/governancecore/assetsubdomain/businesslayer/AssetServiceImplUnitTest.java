@@ -22,10 +22,17 @@ import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetRequestMap
 import com.benzair.governancecore.assetsubdomain.datamapperlayer.AssetResponseMapper;
 import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetRequestModel;
 import com.benzair.governancecore.assetsubdomain.presentationlayer.AssetResponseModel;
-
+/*
+This class is a unit test for the AssetServiceImpl class.
+It essentially asks: Does the service call the correct methods in the correct order and return the correct result?
+*/
+/*
+This tells JUnit: "Enable Mockito inside this test class." 
+Without this, @Mock and @InjectMocks would not work.
+*/
 @ExtendWith(MockitoExtension.class)
 class AssetServiceImplUnitTest {
-
+    // The Mocks: these are fake versions of our dependencies.
     @Mock
     AssetRepository assetRepository;
 
@@ -34,13 +41,15 @@ class AssetServiceImplUnitTest {
 
     @Mock
     AssetResponseMapper assetResponseMapper;
-
+    // This tells Mockito: Create a real AssetServiceImpl object and inject the mocks into it.
+    // Now the service is real, but its dependencies are fake.
     @InjectMocks
     AssetServiceImpl assetService;
 
+    // Method naming convention: methodName_shouldExpectedBehavior_whenCondition
     @Test
     void addAsset_shouldReturnCreatedAssetResponse_whenInputIsValid() {
-        // Arrange
+        // ARRANGE (Setup Phase): we create all required data.
         UUID businessId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
@@ -83,17 +92,20 @@ class AssetServiceImplUnitTest {
                 .updatedAt(now)
                 .build();
 
+        /*
+        The following are Mockito stubbings: we tell the mocks what to return when certain methods are called with certain arguments.
+        */
         when(assetRequestMapper.requestModelToEntity(request)).thenReturn(mappedAsset);
         when(assetRepository.save(mappedAsset)).thenReturn(savedAsset);
         when(assetResponseMapper.entityToResponseModel(savedAsset)).thenReturn(expected);
 
-        // Act
+        // ACT (Execution Phase): we call the method under test.
         AssetResponseModel actual = assetService.addAsset(request);
 
-        // Assert
-        assertEquals(expected, actual);
-        verify(assetRequestMapper).requestModelToEntity(request);
-        verify(assetRepository).save(mappedAsset);
-        verify(assetResponseMapper).entityToResponseModel(savedAsset);
+        // ASSERT (Verification Phase): we check if the result is what we expected and if the correct methods were called.
+        assertEquals(expected, actual);// Check if the actual response matches the expected response.
+        verify(assetRequestMapper).requestModelToEntity(request);// Verify that the request mapper was called with the correct request.
+        verify(assetRepository).save(mappedAsset);// Verify that the repository's save method was called with the mapped asset.
+        verify(assetResponseMapper).entityToResponseModel(savedAsset); // Verify that the response mapper was called with the saved asset.
     }
 }
