@@ -50,6 +50,10 @@ class AssetServiceImplUnitTest {
     @Test
     void addAsset_shouldReturnCreatedAssetResponse_whenInputIsValid() {
         // ARRANGE (Setup Phase): we create all required data.
+        /*
+        The Arrange phase answers one question:
+        "What must exist for this method to run successfully?"
+        */
         UUID businessId = UUID.randomUUID();
         LocalDateTime now = LocalDateTime.now();
 
