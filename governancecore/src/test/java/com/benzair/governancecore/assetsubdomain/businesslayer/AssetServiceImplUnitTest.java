@@ -111,4 +111,10 @@ class AssetServiceImplUnitTest {
         verify(assetRepository).save(mappedAsset);// Verify that the repository's save method was called with the mapped asset.
         verify(assetResponseMapper).entityToResponseModel(savedAsset); // Verify that the response mapper was called with the saved asset.
     }
+
+    // Method naming convention: methodName_shouldExpectedBehavior_whenCondition
+    @Test
+    void getAllAssets_shouldReturnAllAssets(){
+        
+    }
 }
