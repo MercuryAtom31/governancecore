@@ -160,5 +160,8 @@ class AssetServiceImplUnitTest {
         List<AssetResponseModel> result = assetService.getAllAssets();
 
         // ASSERT
+        assertEquals(assetResponseModels, result);
+        verify(assetRepository).findAll();
+        verify(assetResponseMapper).entityToResponseModelList(assets);
     }
 }
