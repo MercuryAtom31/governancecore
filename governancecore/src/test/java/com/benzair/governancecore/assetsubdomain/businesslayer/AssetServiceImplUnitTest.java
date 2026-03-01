@@ -154,10 +154,11 @@ class AssetServiceImplUnitTest {
         );
 
         when(assetRepository.findAll()).thenReturn(assets);
+        when(assetResponseMapper.entityToResponseModelList(assets)).thenReturn(assetResponseModels);
 
         // ACT
         List<AssetResponseModel> result = assetService.getAllAssets();
-        
+
         // ASSERT
     }
 }
