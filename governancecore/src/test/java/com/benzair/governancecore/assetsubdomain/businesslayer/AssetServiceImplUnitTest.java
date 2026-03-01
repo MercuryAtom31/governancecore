@@ -156,7 +156,8 @@ class AssetServiceImplUnitTest {
         when(assetRepository.findAll()).thenReturn(assets);
 
         // ACT
-
+        List<AssetResponseModel> result = assetService.getAllAssets();
+        
         // ASSERT
     }
 }
