@@ -1,6 +1,7 @@
 package com.benzair.governancecore.assetsubdomain.businesslayer;
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -115,6 +116,47 @@ class AssetServiceImplUnitTest {
     // Method naming convention: methodName_shouldExpectedBehavior_whenCondition
     @Test
     void getAllAssets_shouldReturnAllAssets(){
-        
+        // ARRANGE
+        List<Asset> assets = List.of(
+                Asset.builder()
+                        .name("Server 1")
+                        .owner("IT department")
+                        .assetType(AssetType.SERVER)
+                        .classification(DataClassification.CONFIDENTIAL)
+                        .description("Server 1 handling customer data")
+                        .build(),
+
+                Asset.builder()
+                        .name("Server 2")
+                        .owner("IT department")
+                        .assetType(AssetType.SERVER)
+                        .classification(DataClassification.CONFIDENTIAL)
+                        .description("Server 2 handling customer data")
+                        .build()
+        );
+
+        List<AssetResponseModel> assetResponseModels = List.of(
+                AssetResponseModel.builder()
+                        .name("Server 1")
+                        .owner("IT department")
+                        .assetType(AssetType.SERVER)
+                        .classification(DataClassification.CONFIDENTIAL)
+                        .description("Server 1 handling customer data")
+                        .build(),
+
+                AssetResponseModel.builder()
+                        .name("Server 2")
+                        .owner("IT department")
+                        .assetType(AssetType.SERVER)
+                        .classification(DataClassification.CONFIDENTIAL)
+                        .description("Server 2 handling customer data")
+                        .build()
+        );
+
+        when(assetRepository.findAll()).thenReturn(assets);
+
+        // ACT
+
+        // ASSERT
     }
 }
