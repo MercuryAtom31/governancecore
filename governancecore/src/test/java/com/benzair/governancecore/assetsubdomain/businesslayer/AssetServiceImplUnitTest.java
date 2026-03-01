@@ -160,6 +160,12 @@ class AssetServiceImplUnitTest {
         List<AssetResponseModel> result = assetService.getAllAssets();
 
         // ASSERT
+        /* 
+        Assert answers two questions:
+
+        1) Did the method return the correct result?
+        2) Did it interact correctly with its dependencies?
+        */
         assertEquals(assetResponseModels, result);
         verify(assetRepository).findAll();
         verify(assetResponseMapper).entityToResponseModelList(assets);
