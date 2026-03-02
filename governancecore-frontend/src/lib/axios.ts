@@ -4,6 +4,10 @@ import axios from "axios";
 
 // axios.create() = builds a configured client
 export const api = axios.create({
+// What Does ?? "" Mean?
+// This is the nullish coalescing operator.
+// It means:
+// "If the value is null or undefined, use the value on the right instead."
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "",
   // keep false unless we're using cookies/session auth
   withCredentials: false,
