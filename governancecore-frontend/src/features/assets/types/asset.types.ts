@@ -19,10 +19,18 @@ export type DataClassification =
   | "CONFIDENTIAL"
   | "RESTRICTED";
 
+export type AssetType =
+  | "APPLICATION"
+  | "DATABASE"
+  | "SERVER"
+  | "NETWORK_DEVICE"
+  | "DOCUMENT"
+  | "OTHER";
+
 export interface Asset { 
     id: string; 
     name: string; 
-    type: string; 
+    assetType: AssetType; 
     owner: string; 
     classification: DataClassification; 
     description?: string; 
@@ -30,7 +38,7 @@ export interface Asset {
 
 export interface CreateAssetRequest { 
     name: string; 
-    type: string; 
+    assetType: AssetType; 
     owner: string; 
     classification: DataClassification; 
     description?: string; 
