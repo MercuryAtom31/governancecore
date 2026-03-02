@@ -2,7 +2,7 @@
 What Do the Vertical Lines | Mean?
 
 The vertical line is called a pipe.
-The | symbol is called a union type in TypeScript.
+The | is called a union operator in TypeScript, and the whole thing is a union type.
 It is the same as Java enum.
 
 The following means:
