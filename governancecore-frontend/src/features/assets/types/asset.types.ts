@@ -30,12 +30,14 @@ export type AssetType =
   // Domain interface (Asset interface) → based on ResponseModel (AssetResponseModel)
   // These must match the JSON returned.
 export interface Asset { 
-    id: string; 
+    assetId: string; 
     name: string; 
     assetType: AssetType; 
     owner: string; 
     classification: DataClassification; 
-    description?: string; 
+    description?: string;
+    createdAt: string;      // ISO datetime string
+    updatedAt: string;      // ISO datetime string 
 } 
 
 // Request interface (CreateAssetRequest) → based on AssetRequestModel
