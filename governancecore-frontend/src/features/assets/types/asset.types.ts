@@ -44,5 +44,7 @@ It defines:
 
 -What an Asset looks like
 -What data classification is allowed
--What the frontend sends when creating an asset
+-What the frontend sends when creating an 
+
+A contract is the agreement between your frontend and backend about exactly what JSON shape is sent and received over HTTP.
 */
