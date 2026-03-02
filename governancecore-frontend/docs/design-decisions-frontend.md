@@ -18,6 +18,7 @@ It prevents:
 - Breaking PIPEDA compliance modeling :contentReference[oaicite:0]{index=0}  
 - Breaking dashboard calculations :contentReference[oaicite:1]{index=1}  
 
+Moreover, "type" allows us to do the union between types (as we did above), which is not a feature in interfaces.
 ### Architectural Impact
 
 The frontend enforces governance rules before the backend receives the request.
