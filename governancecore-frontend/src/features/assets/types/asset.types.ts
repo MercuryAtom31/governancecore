@@ -27,6 +27,8 @@ export type AssetType =
   | "DOCUMENT"
   | "OTHER";
 
+  // Domain interface (Asset interface) → based on ResponseModel (AssetResponseModel)
+  // These must match the JSON returned.
 export interface Asset { 
     id: string; 
     name: string; 
@@ -36,6 +38,7 @@ export interface Asset {
     description?: string; 
 } 
 
+// Request interface (CreateAssetRequest) → based on AssetRequestModel
 export interface CreateAssetRequest { 
     name: string; 
     assetType: AssetType; 
