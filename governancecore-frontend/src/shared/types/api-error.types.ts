@@ -1,4 +1,5 @@
 // Defines the TypeScript contract for backend error JSON.
+// Defines the shape of backend error JSON.
 export interface ApiError {
   timestamp: string; // when error happened
   path: string;      // request path
