@@ -18,6 +18,8 @@ Which means:
 export async function getAllAssets(): Promise<Asset[]> {
   try {
     // The following means: "Make a GET request, and assume the response body matches Asset[]."
+    // await means:
+    // "Pause this function until the Promise finishes, then give me the result."
     const res = await api.get<Asset[]>(ASSETS_PATH);
     return res.data;
   } catch (err) {
