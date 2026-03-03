@@ -2,7 +2,6 @@
 export interface ApiError {
   timestamp: string; // when error happened
   path: string;      // request path
-  status: number;    // HTTP status code
-  error: string;     // status text/category
+  httpStatus: number;    // HTTP status code example: "BAD_REQUEST"
   message: string;   // human-readable detail
 }
