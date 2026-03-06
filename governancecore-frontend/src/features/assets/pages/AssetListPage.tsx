@@ -1,14 +1,16 @@
+import AddAssetModal from "../components/AddAssetModal";
 import { useAssets } from "../hooks/useAssets";
 
 export default function AssetListPage() {
-  const { assets, loading, error } = useAssets();
+  const { assets, loading, error, addAsset } = useAssets();
 
   return (
     <div className="p-6">
       <h1 className="text-2xl font-semibold mb-4">Assets</h1>
 
-      {loading && <p>Loading...</p>}
+      <AddAssetModal onCreate={addAsset} />
 
+      {loading && <p>Loading...</p>}
       {error && <p className="text-red-500">{error}</p>}
 
       {!loading && assets.length === 0 && (
