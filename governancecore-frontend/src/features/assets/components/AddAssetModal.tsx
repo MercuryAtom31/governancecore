@@ -1,4 +1,5 @@
 import { useState } from "react";
+import "./AddAssetModal.css";
 import type {
   CreateAssetRequest,
   DataClassification,
