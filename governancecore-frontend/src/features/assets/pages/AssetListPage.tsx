@@ -5,16 +5,16 @@ export default function AssetListPage() {
   const { assets, loading, error, addAsset } = useAssets();
 
   return (
-    <div className="p-6">
-      <h1 className="text-2xl font-semibold mb-4">Assets</h1>
+    <div>
+      <h1>Assets</h1>
 
       <AddAssetModal onCreate={addAsset} />
 
       {loading && <p>Loading...</p>}
-      {error && <p className="text-red-500">{error}</p>}
+      {error && <p>{error}</p>}
 
       {!loading && assets.length === 0 && (
-        <p className="text-gray-400">
+        <p>
           Assets form the foundation of your governance lifecycle.
         </p>
       )}

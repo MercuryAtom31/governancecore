@@ -47,7 +47,7 @@ export default function AddAssetModal({ onCreate }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit} style={{ marginBottom: 20 }}>
+    <form onSubmit={handleSubmit}>
       <input
         placeholder="Asset name"
         value={name}

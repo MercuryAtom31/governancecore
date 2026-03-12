@@ -3,8 +3,8 @@ import AssetListPage from "./features/assets/pages/AssetListPage";
 
 function App() {
   return (
-    <div style={{ padding: 20 }}>
-      <nav style={{ marginBottom: 20 }}>
+    <div>
+      <nav>
         <Link to="/assets">Assets</Link>
       </nav>
 
