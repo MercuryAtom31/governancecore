@@ -1,0 +1,29 @@
+form {
+    /* Step 1: Layout */
+  display: flex;
+  flex-direction: column;
+  /* Step 2: Spacing */
+  gap: 12px;
+  /* Step 3: Size */
+  max-width: 420px;
+}
+
+input, select, button {
+  /* Step 4: Typography */
+  font-size: 14px;
+}
+
+label {
+  /* Step 4: Typography */
+  font-weight: 600;
+}
+  /* Step 5: Interaction */
+input:focus,
+select:focus {
+  outline: 2px solid #2563eb;
+}
+  /* Step 5: Interaction */
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
