@@ -5,6 +5,7 @@ import type {
   DataClassification,
   AssetType,
 } from "../types/asset.types";
+import Button from "../../../ui/Button";
 
 type Props = {
   onCreate: (payload: CreateAssetRequest) => Promise<void>;
@@ -101,9 +102,9 @@ export default function AddAssetModal({ onCreate }: Props) {
       </div>
 
       <div className="form-actions">
-        <button type="submit" disabled={saving}>
+        <Button type="submit" disabled={saving}>
           {saving ? "Saving..." : "Add Asset"}
-        </button>
+        </Button>
       </div>
     </form>
   );
