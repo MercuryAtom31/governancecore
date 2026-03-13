@@ -47,50 +47,64 @@ export default function AddAssetModal({ onCreate }: Props) {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <input
-        placeholder="Asset name"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
+    <form className="asset-form" onSubmit={handleSubmit}>
+      <h2 className="form-title">Add Asset</h2>
 
-      <input
-        placeholder="Owner"
-        value={owner}
-        onChange={(e) => setOwner(e.target.value)}
-      />
+      <div className="form-fields">
+        <div className="form-field">
+          <label>Asset name</label>
+          <input value={name} onChange={(e) => setName(e.target.value)} />
+        </div>
 
-      <select
-        value={assetType}
-        onChange={(e) => setAssetType(e.target.value as AssetType)}
-      >
-        <option value="APPLICATION">APPLICATION</option>
-        <option value="DATABASE">DATABASE</option>
-        <option value="SERVER">SERVER</option>
-        <option value="NETWORK_DEVICE">NETWORK_DEVICE</option>
-        <option value="DOCUMENT">DOCUMENT</option>
-        <option value="OTHER">OTHER</option>
-      </select>
+        <div className="form-field">
+          <label>Owner</label>
+          <input value={owner} onChange={(e) => setOwner(e.target.value)} />
+        </div>
 
-      <select
-        value={classification}
-        onChange={(e) => setClassification(e.target.value as DataClassification)}
-      >
-        <option value="PUBLIC">PUBLIC</option>
-        <option value="INTERNAL">INTERNAL</option>
-        <option value="CONFIDENTIAL">CONFIDENTIAL</option>
-        <option value="RESTRICTED">RESTRICTED</option>
-      </select>
+        <div className="form-field">
+          <label>Asset Type</label>
+          <select
+            value={assetType}
+            onChange={(e) => setAssetType(e.target.value as AssetType)}
+          >
+            <option value="APPLICATION">APPLICATION</option>
+            <option value="DATABASE">DATABASE</option>
+            <option value="SERVER">SERVER</option>
+            <option value="NETWORK_DEVICE">NETWORK_DEVICE</option>
+            <option value="DOCUMENT">DOCUMENT</option>
+            <option value="OTHER">OTHER</option>
+          </select>
+        </div>
 
-      <input
-        placeholder="Description (optional)"
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-      />
+        <div className="form-field">
+          <label>Classification</label>
+          <select
+            value={classification}
+            onChange={(e) =>
+              setClassification(e.target.value as DataClassification)
+            }
+          >
+            <option value="PUBLIC">PUBLIC</option>
+            <option value="INTERNAL">INTERNAL</option>
+            <option value="CONFIDENTIAL">CONFIDENTIAL</option>
+            <option value="RESTRICTED">RESTRICTED</option>
+          </select>
+        </div>
 
-      <button type="submit" disabled={saving}>
-        {saving ? "Saving..." : "Add Asset"}
-      </button>
+        <div className="form-field">
+          <label>Description</label>
+          <input
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+      </div>
+
+      <div className="form-actions">
+        <button type="submit" disabled={saving}>
+          {saving ? "Saving..." : "Add Asset"}
+        </button>
+      </div>
     </form>
   );
 }
