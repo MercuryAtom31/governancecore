@@ -1,35 +1,19 @@
-form {
-    /* Step 1: Layout */
+.asset-form {
+  max-width: 500px;
+  margin: 0 auto;
+}
+
+.form-fields {
   display: flex;
   flex-direction: column;
-  /* Step 2: Spacing */
-  gap: 12px;
-  /* Step 3: Size */
-  max-width: 420px;
+  gap: 16px;
 }
 
-input, select, button {
-  /* Step 4: Typography */
-  font-size: 14px;
+.form-field {
+  display: flex;
+  flex-direction: column;
 }
 
-label {
-  /* Step 4: Typography */
-  font-weight: 600;
-}
-  /* Step 5: Interaction */
-input:focus,
-select:focus {
-  outline: 2px solid #2563eb;
-}
-  /* Step 5: Interaction */
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-body, button, input {
-  font-family: 'Montserrat', sans-serif;
-  font-weight: 700;
-  letter-spacing: 1.4px;
+.form-actions {
+  margin-top: 20px;
 }
