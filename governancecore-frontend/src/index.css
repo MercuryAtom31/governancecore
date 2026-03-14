@@ -9,3 +9,12 @@
 
 }
 
+/* Mental Model:
+
+:root
+   ↓
+stores global variables (we declare the variables inside it.)
+
+body / html / elements
+   ↓
+apply global styles using those variables */
