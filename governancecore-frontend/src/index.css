@@ -1,12 +1,10 @@
+/* This import statement tells the browser:
+Load the Zalando Sans Expanded font with all weights from 200 to 900, and include both normal and italic versions. */
+@import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap');
+
 :root {
-  /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
 
-  color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
-  background-color: #242424; */
-
+  --font-main: "Zalando Sans Expanded", system-ui, sans-serif;
   /* =========================================
   Color Palette from "https://colorhunt.co/palette/0f0f0f232d3f005b41008170"
   ========================================= */
@@ -43,6 +41,7 @@
 }
 
 body {
+  font-family: var(--font-main);
   background: var(--bg);
   color: var(--text);
 }
