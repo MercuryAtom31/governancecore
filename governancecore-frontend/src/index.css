@@ -159,7 +159,7 @@ a:hover {
 .button-primary {
   background: var(--primary);
   color: var(--text);
-  border: 1px solid transparent;
+  border: 1px solid var(--primary);
   padding: 10px 16px;
   border-radius: 6px;
   cursor: pointer;
@@ -172,6 +172,7 @@ a:hover {
 
 .button-primary:active {
   background: var(--primary-active);
+  transform: translateY(1px);
 }
 
 /* Generic card / panel */

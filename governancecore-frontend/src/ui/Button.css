@@ -1,18 +1,23 @@
 .ui-button {
   padding: 8px 14px;
   border-radius: 6px;
+
   border: 1px solid var(--border);
-  background: var(--accent);
-  color: white;
-  cursor: pointer;
+
+  background: var(--primary);
+  color: var(--text);
+
+  cursor:pointer;
+
+  transition: background 0.2s ease, transform 0.05s ease;
 }
 
-.ui-button:hover{
-  border-radius: 4px;
-  background-color: aquamarine;
+/* Hover state */
+.ui-button:hover {
+  background: var(--primary-hover);
 }
 
-/* .ui-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-} */
+/* Active / pressed state */
+.ui-button:active {
+  background: var(--primary-active);
+}
