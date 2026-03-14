@@ -1,12 +1,45 @@
 :root {
-  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  /* font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
   color: rgba(255, 255, 255, 0.87);
-  background-color: #242424;
+  background-color: #242424; */
 
+  /* =========================================
+  Color Palette from "https://colorhunt.co/palette/0f0f0f232d3f005b41008170"
+  ========================================= */
+  /* Main application background
+  Used for the page background and app shell. */
+  --bg: #0F0F0F;
+  /* Surface color
+     Used for cards, tables, modals, panels, and containers
+     that sit on top of the background. */
+  --surface: #232D3F;
+  /* Primary accent color
+     Used for main actions:
+     - primary buttons
+     - active navigation items
+     - links
+     - focus states */
+  --primary: #008170;
+  /* Success / positive state color
+     Used for:
+     - implemented controls
+     - success messages
+     - completed status indicators */
+  --success: #005B41;
+  /* Main readable text color
+     Used for titles, labels, and primary content */
+  --text: #FFFFFF;
+  /* Secondary text color
+     Used for:
+     - descriptions
+     - metadata
+     - helper text
+     - timestamps */
+  --text-muted: #B0B0B0;
 }
 
 /* Mental Model:
