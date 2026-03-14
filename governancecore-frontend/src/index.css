@@ -47,6 +47,17 @@ body {
   color: var(--text);
 }
 
+select,
+option,
+input,
+textarea,
+button {
+  font-family: inherit;
+  /* "inherit" means:
+  "Use the same font as the parent element."
+  Since the body already has the font, all form elements will now match. */
+}
+
 /* Mental Model:
 
 :root
