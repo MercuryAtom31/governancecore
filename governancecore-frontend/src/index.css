@@ -1,43 +1,123 @@
 /* This import statement tells the browser:
-Load the Zalando Sans Expanded font with all weights from 200 to 900, and include both normal and italic versions. */
+Load the Zalando Sans Expanded font with all weights from 200 to 900,
+and include both normal and italic versions. */
 @import url('https://fonts.googleapis.com/css2?family=Zalando+Sans+Expanded:ital,wght@0,200..900;1,200..900&display=swap');
 
 :root {
-
-  --font-main: "Zalando Sans Expanded", system-ui, sans-serif;
   /* =========================================
-  Color Palette from "https://colorhunt.co/palette/0f0f0f232d3f005b41008170"
-  ========================================= */
+     TYPOGRAPHY
+     ========================================= */
+
+  /* Main font used across the whole app */
+  --font-main: "Zalando Sans Expanded", system-ui, sans-serif;
+
+  /* =========================================
+     COLOR PALETTE
+     Source:
+     https://colorhunt.co/palette/0f0f0f232d3f005b41008170
+     ========================================= */
+
+  /* ===== BACKGROUND / STRUCTURE ===== */
+
   /* Main application background
-  Used for the page background and app shell. */
-  --bg: #0F0F0F;
-  /* Surface color
-     Used for cards, tables, modals, panels, and containers
-     that sit on top of the background. */
-  --surface: #232D3F;
-  /* Primary accent color
-     Used for main actions:
+     Used for:
+     - page background
+     - app shell background
+     - large layout areas */
+  --bg: #0f0f0f;
+
+  /* Main surface color
+     Used for:
+     - cards
+     - tables
+     - forms
+     - modals
+     - panels
+     - containers sitting on top of the background */
+  --surface: #232d3f;
+
+  /* Slight variation of surface
+     Used for:
+     - hover on cards
+     - secondary panels
+     - subtle layered sections */
+  --surface-hover: #2f3a50;
+
+  /* Border / divider color
+     Used for:
+     - input borders
+     - card borders
+     - section separators
+     - table lines */
+  --border: #3a465c;
+
+  /* ===== PRIMARY ACTION COLOR (TEAL) ===== */
+
+  /* Main action color
+     Used for:
      - primary buttons
      - active navigation items
      - links
-     - focus states */
+     - focus states
+     - important interactive elements */
   --primary: #008170;
+
+  /* Primary hover state
+     Used when the user hovers interactive teal elements */
+  --primary-hover: #00a693;
+
+  /* Primary active / pressed state
+     Used when:
+     - button is pressed
+     - nav item is strongly active
+     - interaction needs stronger feedback */
+  --primary-active: #00695c;
+
+  /* ===== SUCCESS COLOR (GREEN) ===== */
+
   /* Success / positive state color
      Used for:
      - implemented controls
      - success messages
-     - completed status indicators */
-  --success: #005B41;
+     - completed states
+     - positive indicators */
+  --success: #005b41;
+
+  /* Lighter success variation
+     Used for:
+     - success badges
+     - soft success backgrounds
+     - subtle positive highlights */
+  --success-light: #2aa07e;
+
+  /* ===== TEXT ===== */
+
   /* Main readable text color
-     Used for titles, labels, and primary content */
-  --text: #FFFFFF;
-  /* Secondary text color
+     Used for:
+     - headings
+     - labels
+     - main content
+     - important values */
+  --text: #ffffff;
+
+  /* Secondary / muted text color
      Used for:
      - descriptions
-     - metadata
      - helper text
-     - timestamps */
-  --text-muted: #B0B0B0;
+     - metadata
+     - timestamps
+     - less important information */
+  --text-muted: #b0b0b0;
+}
+
+/* =========================================
+   GLOBAL PAGE STYLING
+   ========================================= */
+
+html,
+body,
+#root {
+  min-height: 100%;
 }
 
 body {
@@ -47,23 +127,88 @@ body {
   color: var(--text);
 }
 
+/* =========================================
+   GLOBAL ELEMENT DEFAULTS
+   ========================================= */
+
+/* Make form elements inherit the same typography
+   as the rest of the application */
+input,
 select,
 option,
-input,
 textarea,
 button {
-  font-family: inherit;
-  /* "inherit" means:
-  "Use the same font as the parent element."
-  Since the body already has the font, all form elements will now match. */
+  font: inherit;
 }
 
-/* Mental Model:
+/* Links */
+a {
+  color: var(--primary);
+  text-decoration: none;
+}
 
-:root
-   ↓
-stores global variables (we declare the variables inside it.)
+a:hover {
+  color: var(--primary-hover);
+}
 
-body / html / elements
-   ↓
-apply global styles using those variables */
+/* =========================================
+   REUSABLE UI EXAMPLES
+   ========================================= */
+
+/* Primary button */
+.button-primary {
+  background: var(--primary);
+  color: var(--text);
+  border: 1px solid transparent;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.button-primary:hover {
+  background: var(--primary-hover);
+}
+
+.button-primary:active {
+  background: var(--primary-active);
+}
+
+/* Generic card / panel */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+
+/* Muted text utility */
+.text-muted {
+  color: var(--text-muted);
+}
+
+/* Success badge / label */
+.status-success {
+  background: var(--success);
+  color: var(--text);
+  padding: 4px 8px;
+  border-radius: 999px;
+}
+
+/* Soft success surface */
+.status-success-light {
+  background: var(--success-light);
+  color: var(--text);
+}
+
+/* =========================================
+   Mental Model
+   =========================================
+
+   :root
+      ↓
+   stores reusable global variables
+
+   body / elements / classes
+      ↓
+   apply styling using those variables
+*/
