@@ -41,6 +41,7 @@ Load the Zalando Sans Expanded font with all weights from 200 to 900, and includ
 }
 
 body {
+  margin: 50px;
   font-family: var(--font-main);
   background: var(--bg);
   color: var(--text);
