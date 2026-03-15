@@ -54,6 +54,10 @@
   height: 100%;
 }
 
+.asset-card:hover {
+    box-shadow: 2px -1px 10px var(--text);
+}
+
 .asset-card__header {
   display: flex;
   flex-direction: column;
