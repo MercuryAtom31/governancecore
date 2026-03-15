@@ -11,5 +11,5 @@
 
   Third value is the blur amount (the higher the blurrier).
    */
-  box-shadow: 0 18px 40px var(--primary-hover);
+  box-shadow: 2px -1px 10px var(--primary-hover);
 }
