@@ -4,6 +4,12 @@
   gap: 24px;
 }
 
+.assets-page__center-div {
+  max-width: 720px;
+  margin: 0 auto;
+  text-align: center;
+}
+
 .assets-page__title {
   margin: 0;
   font-size: 3rem;

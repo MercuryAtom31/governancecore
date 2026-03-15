@@ -8,7 +8,7 @@ export default function AssetListPage() {
 
   return (
     <div className="assets-page">
-      <div>
+      <div className="assets-page__center-div">
         <h1 className="assets-page__title">Assets</h1>
         <p className="assets-page__lead">
           Track the systems, applications, and data stores that matter to your
