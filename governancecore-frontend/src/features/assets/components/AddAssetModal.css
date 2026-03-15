@@ -15,5 +15,11 @@
 }
 
 .form-actions {
+  /* justify-content controls the main axis.
+  Default main axis = horizontal.
+  align-items controls the cross axis.
+  Cross axis = vertical. */
+  display: flex;
+  justify-content: center;
   margin-top: 20px;
 }
