@@ -20,7 +20,31 @@
 }
 
 .assets-page__form-card {
+  /* This sets the maximum width the card is allowed to grow. 
+  The card can grow until 880px
+  but never wider than that.
+  */
   max-width: 880px;
+    /* width: 100%;
+  This tells the element:
+  Take the full width of the available space.
+
+  But remember:
+  max-width: 880px
+  limits that width.
+
+  So the actual behavior becomes:
+  Use 100% width
+  but never exceed 880px
+
+  Example:
+  If the page container is 600px
+  card = 600px
+
+  If the page container is 2000px
+  card = 880px */
+  width: 100%;
+  margin: 0 auto;
 }
 
 .assets-page__empty {
