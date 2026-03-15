@@ -8,6 +8,9 @@
   margin: 0;
   font-size: 3rem;
   line-height: 1;
+  text-shadow: 
+    2px 2px 0px var(--primary-hover),
+    5px 5px 0px var(--success);
 }
 
 .assets-page__lead {
