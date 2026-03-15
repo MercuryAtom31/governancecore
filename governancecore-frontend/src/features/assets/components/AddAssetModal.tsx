@@ -8,6 +8,7 @@ import type {
   AssetType,
 } from "../types/asset.types";
 import Button from "../../../ui/Button";
+import FormField from "../../../ui/FormField";
 
 type Props = {
   onCreate: (payload: CreateAssetRequest) => Promise<void>;
@@ -49,68 +50,60 @@ export default function AddAssetModal({ onCreate }: Props) {
     }
   };
 
-  return (
-    <form className="asset-form" onSubmit={handleSubmit}>
-      <h2 className="form-title">Add Asset</h2>
+return (
+  <form className="asset-form" onSubmit={handleSubmit}>
+    <h2 className="form-title">Add Asset</h2>
 
-      <div className="form-fields">
-        <div className="form-field">
-          <label>Asset name</label>
-          {/* The following line means:
-          "Show the current value of name inside the input, 
-          and whenever the user types, update name with the new text." */}
-          <Input value={name} onChange={(e) => setName(e.target.value)} />
-        </div>
+    <div className="form-fields">
+      <FormField label="Asset name">
+        <Input value={name} onChange={(e) => setName(e.target.value)} />
+      </FormField>
 
-        <div className="form-field">
-          <label>Owner</label>
-          <Input value={owner} onChange={(e) => setOwner(e.target.value)} />
-        </div>
+      <FormField label="Owner">
+        <Input value={owner} onChange={(e) => setOwner(e.target.value)} />
+      </FormField>
 
-        <div className="form-field">
-          <label>Asset Type</label>
-          <select
-            value={assetType}
-            onChange={(e) => setAssetType(e.target.value as AssetType)}
-          >
-            <option value="APPLICATION">APPLICATION</option>
-            <option value="DATABASE">DATABASE</option>
-            <option value="SERVER">SERVER</option>
-            <option value="NETWORK_DEVICE">NETWORK_DEVICE</option>
-            <option value="DOCUMENT">DOCUMENT</option>
-            <option value="OTHER">OTHER</option>
-          </select>
-        </div>
+      <FormField label="Asset Type">
+        <select
+          value={assetType}
+          onChange={(e) => setAssetType(e.target.value as AssetType)}
+        >
+          <option value="APPLICATION">APPLICATION</option>
+          <option value="DATABASE">DATABASE</option>
+          <option value="SERVER">SERVER</option>
+          <option value="NETWORK_DEVICE">NETWORK_DEVICE</option>
+          <option value="DOCUMENT">DOCUMENT</option>
+          <option value="OTHER">OTHER</option>
+        </select>
+      </FormField>
 
-        <div className="form-field">
-          <label>Classification</label>
-          <select
-            value={classification}
-            onChange={(e) =>
-              setClassification(e.target.value as DataClassification)
-            }
-          >
-            <option value="PUBLIC">PUBLIC</option>
-            <option value="INTERNAL">INTERNAL</option>
-            <option value="CONFIDENTIAL">CONFIDENTIAL</option>
-            <option value="RESTRICTED">RESTRICTED</option>
-          </select>
-        </div>
+      <FormField label="Classification">
+        <select
+          value={classification}
+          onChange={(e) =>
+            setClassification(e.target.value as DataClassification)
+          }
+        >
+          <option value="PUBLIC">PUBLIC</option>
+          <option value="INTERNAL">INTERNAL</option>
+          <option value="CONFIDENTIAL">CONFIDENTIAL</option>
+          <option value="RESTRICTED">RESTRICTED</option>
+        </select>
+      </FormField>
 
-        <div className="form-field">
-          <label>Description</label>
-          <Input
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
-        </div>
-      </div>
+      <FormField label="Description">
+        <Input
+          value={description}
+          onChange={(e) => setDescription(e.target.value)}
+        />
+      </FormField>
+    </div>
 
-      <div className="form-actions">
-        <Button type="submit" disabled={saving}>
-          {saving ? "Saving..." : "Add Asset"}
-        </Button>
-      </div>
-    </form>
-  );
+    <div className="form-actions">
+      <Button type="submit" disabled={saving}>
+        {saving ? "Saving..." : "Add Asset"}
+      </Button>
+    </div>
+  </form>
+);
 }
