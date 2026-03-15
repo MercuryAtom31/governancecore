@@ -1,6 +1,7 @@
 import { useState } from "react";
 import "./AddAssetModal.css";
 import Input from "../../../ui/Input";
+import Select from "../../../ui/Select";
 
 import type {
   CreateAssetRequest,
@@ -64,7 +65,7 @@ return (
       </FormField>
 
       <FormField label="Asset Type">
-        <select
+        <Select
           value={assetType}
           onChange={(e) => setAssetType(e.target.value as AssetType)}
         >
@@ -74,11 +75,11 @@ return (
           <option value="NETWORK_DEVICE">NETWORK_DEVICE</option>
           <option value="DOCUMENT">DOCUMENT</option>
           <option value="OTHER">OTHER</option>
-        </select>
+        </Select>
       </FormField>
 
       <FormField label="Classification">
-        <select
+        <Select
           value={classification}
           onChange={(e) =>
             setClassification(e.target.value as DataClassification)
@@ -88,7 +89,7 @@ return (
           <option value="INTERNAL">INTERNAL</option>
           <option value="CONFIDENTIAL">CONFIDENTIAL</option>
           <option value="RESTRICTED">RESTRICTED</option>
-        </select>
+        </Select>
       </FormField>
 
       <FormField label="Description">
