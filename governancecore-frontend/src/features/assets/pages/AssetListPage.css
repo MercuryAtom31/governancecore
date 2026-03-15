@@ -34,10 +34,16 @@
   padding: 0;
 }
 
+.assets-page__grid > li {
+  height: 100%;
+}
+
 .asset-card {
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-height: 220px;
+  height: 100%;
 }
 
 .asset-card__header {
@@ -88,4 +94,9 @@
   margin: 0;
   color: var(--text-muted);
   line-height: 1.5;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
 }
