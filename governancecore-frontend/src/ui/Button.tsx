@@ -1,5 +1,7 @@
 import "./Button.css"; // Loading the CSS file that styles this Button component.
 
+// This is a Button primitive UI which will be reused throughout the project.
+
 // The following line means: This Button component accepts the same props that a normal HTML button accepts.
 type Props = React.ButtonHTMLAttributes<HTMLButtonElement>;
 

@@ -1,5 +1,7 @@
 import { useState } from "react";
 import "./AddAssetModal.css";
+import Input from "../../../ui/Input";
+
 import type {
   CreateAssetRequest,
   DataClassification,
@@ -54,12 +56,15 @@ export default function AddAssetModal({ onCreate }: Props) {
       <div className="form-fields">
         <div className="form-field">
           <label>Asset name</label>
-          <input value={name} onChange={(e) => setName(e.target.value)} />
+          {/* The following line means:
+          "Show the current value of name inside the input, 
+          and whenever the user types, update name with the new text." */}
+          <Input value={name} onChange={(e) => setName(e.target.value)} />
         </div>
 
         <div className="form-field">
           <label>Owner</label>
-          <input value={owner} onChange={(e) => setOwner(e.target.value)} />
+          <Input value={owner} onChange={(e) => setOwner(e.target.value)} />
         </div>
 
         <div className="form-field">
@@ -94,7 +99,7 @@ export default function AddAssetModal({ onCreate }: Props) {
 
         <div className="form-field">
           <label>Description</label>
-          <input
+          <Input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
           />
