@@ -32,11 +32,11 @@
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
   /* gap affects both directions in a grid:
-  horizontal gap between columns.
-  vertical gap between rows. */
+  horizontal gap between columns (left/right spacing).
+  vertical gap between rows (top/bottom spacing). */
   column-gap: 30px;
   row-gap: 70px;
-  
+
   list-style: none;
   margin: 0;
   padding: 0;
