@@ -3,5 +3,13 @@
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 20px;
+  /* First value is the horizontal offset.
+  Positive values (20px) for RIGHT, negative values (-20px) for LEFT.
+
+  Second value is the vertical offset.
+  Positive values (20px) for DOWN, negative values (-20px) for UP.
+
+  Third value is the blur amount (the higher the blurrier).
+   */
   box-shadow: 0 18px 40px var(--primary-hover);
 }
