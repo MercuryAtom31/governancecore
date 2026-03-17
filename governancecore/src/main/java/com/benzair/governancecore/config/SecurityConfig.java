@@ -1,6 +1,5 @@
 package com.benzair.governancecore.config;
 
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -33,7 +32,7 @@ public class SecurityConfig {
                 // every request must bring its token
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 // Let Spring Security reuse the CORS configuration already defined in CorsConfig.
-                .cors(Customizer.withDefaults()) 
+                .cors(Customizer.withDefaults())
                 // Disable CSRF protection since we are not using cookies for authentication.
                 .csrf(csrf -> csrf.disable())
                 // Define which routes require authentication and which don't.
