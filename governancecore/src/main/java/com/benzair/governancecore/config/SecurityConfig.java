@@ -13,7 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 // This class tells Spring Security how to protect our API and how to check users using tokens (JWT).
 // This class is like the security guard at the entrance of a building, checking IDs and deciding who can enter which rooms.
 @Configuration // This annotation tells Spring that this class contains configuration settings.
-@EnableWebSecurity // This annotation enables Spring Security's web security features like authentication and authorization.
+@EnableWebSecurity // This tells Spring to use the configuration in this class to set up web security for the application and not the default one.
 @EnableMethodSecurity // This annotation allows us to use method-level security annotations like @PreAuthorize in our controllers and services.
 public class SecurityConfig {
 
