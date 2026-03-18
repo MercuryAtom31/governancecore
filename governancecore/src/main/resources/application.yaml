@@ -21,6 +21,17 @@ spring:
     validate-on-migrate: true
     baseline-on-migrate: false
     
+# The issuer-uri property is used to specify the URL of the identity provider
+# that issued the JWT tokens. By setting this property,
+# we are telling the application to only accept tokens that were issued by this specific identity provider or realm. 
+# This is a security measure to ensure that the application only accepts tokens from trusted sources.
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/governance-core
+
+
 
 # application.yaml or application.yml is where you configure how your app runs.
 
