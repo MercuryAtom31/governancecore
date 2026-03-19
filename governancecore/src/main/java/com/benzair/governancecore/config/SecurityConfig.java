@@ -85,7 +85,7 @@ public class SecurityConfig {
     }
 }
 
-// Basically, this code configures Spring Security to use JWT tokens for authentication and authorization. 
+// Basically, this code configures Spring Security to use JWT tokens for authentication and authorization.
 // It defines which endpoints require authentication
 // and how to extract roles from the JWT token to determine the user's authorities.
 // The roles are prefixed with "ROLE_" to conform to Spring Security's convention.
