@@ -1,66 +1,75 @@
 package com.benzair.governancecore.config;
 
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.convert.converter.Converter;
 import org.springframework.http.HttpMethod;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-// This class tells Spring Security how to protect our API and how to check users using tokens (JWT).
-// This class is like the security guard at the entrance of a building, checking IDs and deciding who can enter which rooms.
-@Configuration // This annotation tells Spring that this class contains configuration settings.
-@EnableWebSecurity // This tells Spring to use the configuration in this class to set up web security for the application and not the default one.
-@EnableMethodSecurity // This annotation allows us to use method-level security annotations like @PreAuthorize in our controllers and services.
+@Configuration
+@EnableWebSecurity
+@EnableMethodSecurity
 public class SecurityConfig {
 
-    // SecurityFilterChain: A list of security steps that every request must go through.
-    // A pipeline of checks before a request reaches the controller.
+    private static final Set<String> BUSINESS_ROLES = Set.of("ADMIN", "ANALYST", "AUDITOR");
 
-    // HttpSecurity: A builder (tool) used to define all your security rules.
-    // This is where I configure security behavior.
-    @Bean // This annotation tells Spring to create and manage this bean (object) in the application context, making it available for dependency injection.
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-                // http.sessionManagement(...) Tells Spring:
-                // Do NOT remember users using sessions.
-                // Meaning:
-                // no login stored on the server
-                // every request must bring its token
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                // Let Spring Security reuse the CORS configuration already defined in CorsConfig.
-                .cors(Customizer.withDefaults())
-                // Disable CSRF protection since we are not using cookies for authentication.
+                .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
-                // Define which routes require authentication and which don't.
-                .authorizeHttpRequests(auth -> auth // "The request is trying to access a protected route"
-                        // "Spring Security checks the route and applies the corresponding rule"
-                        // Only authenticated users can create, update, delete assets and access their profile.
+                .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/v1/assets/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/assets/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/api/v1/assets/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/api/v1/assets/**").authenticated()
                         .requestMatchers("/api/v1/auth/me").authenticated()
-                        .anyRequest().permitAll()) // All other routes are public and can be accessed without authentication.
-                // Tell Spring Security to use JWT tokens for authentication.
-                .oauth2ResourceServer(oauth2 -> oauth2.jwt(Customizer.withDefaults()));
-        // Build the security filter chain and return it to Spring Security.
+                        .anyRequest().permitAll())
+                .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
+
         return http.build();
     }
+
+    @Bean
+    public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
+        JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
+        converter.setJwtGrantedAuthoritiesConverter(this::extractRealmRoles);
+        return converter;
+    }
+
+    private Collection<GrantedAuthority> extractRealmRoles(Jwt jwt) {
+        Map<String, Object> realmAccess = jwt.getClaim("realm_access");
+        if (realmAccess == null || realmAccess.get("roles") == null) {
+            return List.of();
+        }
+
+        Object rolesClaim = realmAccess.get("roles");
+        if (!(rolesClaim instanceof Collection<?> roles)) {
+            return List.of();
+        }
+
+        return roles.stream()
+                .filter(String.class::isInstance)
+                .map(String.class::cast)
+                .filter(BUSINESS_ROLES::contains)
+                .map(role -> "ROLE_" + role)
+                .map(SimpleGrantedAuthority::new)
+                .collect(Collectors.toList());
+    }
 }
-
-/*
-The flow:
-So in practice:
-
-the request arrives with a token.
-Spring Security checks whether that token is valid.
-if valid, the user is treated as authenticated.
-then Spring Security applies the access rules from SecurityConfig.
-if the request matches a protected route, the user is either allowed or blocked.
-*/
-
-// In projects, we usually use the SecurityConfig class to define the security rules for our API, while the JwtAuthenticationFilter class is responsible for checking the validity of the JWT token in each request.
