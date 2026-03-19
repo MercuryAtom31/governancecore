@@ -9,12 +9,17 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+// This controller provides an endpoint to get information about the currently authenticated user based on the JWT token they present.
+
 @RestController
 @RequestMapping("/api/v1/auth")
 public class AuthController {
 
-    @GetMapping("/me")
+    @GetMapping("/me") // This endpoint will return the details of the currently authenticated user.
     public AuthUserResponseModel getCurrentUser(Authentication authentication) {
+        // We extract the JWT token from the Authentication object.
+        // The JwtAuthenticationConverter we defined in SecurityConfig will have already processed the token
+        // and set it as the principal of the Authentication object.
         Jwt jwt = (Jwt) authentication.getPrincipal();
 
         List<String> roles = authentication.getAuthorities().stream()
