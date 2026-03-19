@@ -35,3 +35,16 @@ public class AuthController {
                 .build();
     }
 }
+
+// How the controller works:
+
+// Authentication authentication:
+// Spring injects the authenticated request context
+
+// Jwt jwt = (Jwt) authentication.getPrincipal():
+// gets the decoded token object
+
+// authentication.getAuthorities():
+// gets the roles after your JWT converter already mapped them
+
+// it strips the ROLE_ prefix before returning them to the frontend
