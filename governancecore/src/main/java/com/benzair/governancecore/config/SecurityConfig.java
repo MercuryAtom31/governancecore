@@ -35,6 +35,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .cors(cors -> {})
                 .csrf(csrf -> csrf.disable())
+                // Route authorization rules: this part says who must be logged in to access certain endpoints.
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(HttpMethod.GET, "/api/v1/assets/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/api/v1/assets/**").authenticated()
@@ -59,7 +60,7 @@ public class SecurityConfig {
         return converter;
     }
 
-    // This method extracts the roles from the "realm_access" claim in the JWT token 
+    // This method extracts the roles from the "realm_access" claim in the JWT token
     // and converts them into Spring Security authorities.
     private Collection<GrantedAuthority> extractRealmRoles(Jwt jwt) {
         Map<String, Object> realmAccess = jwt.getClaim("realm_access");
@@ -74,13 +75,13 @@ public class SecurityConfig {
         }
         // We filter the roles to include only those that are in our defined set of business roles,
         // and we prefix them with "ROLE_" to conform to Spring Security's convention for roles.
-        return roles.stream()
-                .filter(String.class::isInstance)
-                .map(String.class::cast)
-                .filter(BUSINESS_ROLES::contains)
-                .map(role -> "ROLE_" + role)
-                .map(SimpleGrantedAuthority::new)
-                .collect(Collectors.toList());
+        return roles.stream() // Start looping through the roles one by one.
+                .filter(String.class::isInstance) // Keep only items that are strings.
+                .map(String.class::cast) // Convert the remaining items to strings.
+                .filter(BUSINESS_ROLES::contains) // Keep only roles that we defined above in the BUSINESS_ROLES set.
+                .map(role -> "ROLE_" + role) // Prefix the role with "ROLE_" to follow Spring Security's convention for role names.
+                .map(SimpleGrantedAuthority::new) // Convert the role string into a SimpleGrantedAuthority object, which is what Spring Security uses to represent authorities.
+                .collect(Collectors.toList()); // Collect the resulting stream of authorities into a list and return it.
     }
 }
 
