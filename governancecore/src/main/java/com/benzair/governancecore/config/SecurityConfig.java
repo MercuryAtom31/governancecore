@@ -21,71 +21,86 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.web.SecurityFilterChain;
 
-@Configuration
-@EnableWebSecurity // this annotation enables Spring Security's web security support and provides the Spring MVC integration.
-@EnableMethodSecurity // this annotation enables method-level security annotations like @PreAuthorize.
+// This class tells Spring Security how to protect our API and how to interpret
+// the roles that arrive inside JWT access tokens.
+@Configuration // This annotation tells Spring that this class contains configuration settings.
+@EnableWebSecurity // This tells Spring to use the configuration in this class to set up web security for the application.
+@EnableMethodSecurity // This annotation allows us to use method-level security annotations like @PreAuthorize later.
 public class SecurityConfig {
 
-    // Define the set of business roles that we want to extract from the JWT token and use for authorization.
+    // These are the business roles our application actually cares about.
+    // We ignore technical Keycloak roles like offline_access and uma_authorization.
     private static final Set<String> BUSINESS_ROLES = Set.of("ADMIN", "ANALYST", "AUDITOR");
 
-    @Bean
+    // SecurityFilterChain: A list of security steps that every request must go through.
+    // HttpSecurity: The builder used to define those security rules.
+    @Bean // This annotation tells Spring to create and manage this bean in the application context.
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
+                // Do NOT remember users using server-side sessions.
+                // Every request must bring its own JWT token.
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                // Reuse the CORS configuration already defined in CorsConfig.
                 .cors(cors -> {})
+                // Disable CSRF because this API is using bearer tokens, not cookie-based login.
                 .csrf(csrf -> csrf.disable())
-                // Route authorization rules: this part says who must be logged in to access certain endpoints.
+                // Define who can access which routes.
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(HttpMethod.GET, "/api/v1/assets/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/api/v1/assets/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/api/v1/assets/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/api/v1/assets/**").authenticated()
+                        // Any authenticated business role can read assets.
+                        .requestMatchers(HttpMethod.GET, "/api/v1/assets/**").hasAnyRole("ADMIN", "ANALYST", "AUDITOR")
+                        // Only ADMIN and ANALYST can create, update, or delete assets.
+                        .requestMatchers(HttpMethod.POST, "/api/v1/assets/**").hasAnyRole("ADMIN", "ANALYST")
+                        .requestMatchers(HttpMethod.PUT, "/api/v1/assets/**").hasAnyRole("ADMIN", "ANALYST")
+                        .requestMatchers(HttpMethod.DELETE, "/api/v1/assets/**").hasAnyRole("ADMIN", "ANALYST")
+                        // The /auth/me endpoint is protected and requires a valid authenticated user.
                         .requestMatchers("/api/v1/auth/me").authenticated()
+                        // Any route not listed above stays public for now.
                         .anyRequest().permitAll())
+                // Tell Spring Security to use JWT tokens and our custom role-mapping logic.
                 .oauth2ResourceServer(oauth2 -> oauth2.jwt(jwt -> jwt.jwtAuthenticationConverter(jwtAuthenticationConverter())));
 
+        // Build the security filter chain and return it to Spring Security.
         return http.build();
     }
 
-    // This bean defines how to convert a JWT token into an Authentication object that Spring Security can use for authorization decisions.
+    // JwtAuthenticationConverter is the translator between the JWT and Spring Security.
+    // It tells Spring how to extract authorities from the token.
     @Bean
     public Converter<Jwt, ? extends AbstractAuthenticationToken> jwtAuthenticationConverter() {
-        // We create a JwtAuthenticationConverter and set a custom converter for extracting granted authorities from the JWT token.
         JwtAuthenticationConverter converter = new JwtAuthenticationConverter();
-        // The custom converter is defined as a method reference to the extractRealmRoles method, which will extract the roles from the "realm_access" claim in the JWT token
-        //  and convert them into Spring Security authorities.
         converter.setJwtGrantedAuthoritiesConverter(this::extractRealmRoles);
-        // Finally, we return the configured converter.
         return converter;
     }
 
-    // This method extracts the roles from the "realm_access" claim in the JWT token
-    // and converts them into Spring Security authorities.
+    // This method reads the "realm_access.roles" claim from the JWT,
+    // keeps only our business roles, and converts them into Spring Security authorities.
     private Collection<GrantedAuthority> extractRealmRoles(Jwt jwt) {
         Map<String, Object> realmAccess = jwt.getClaim("realm_access");
         if (realmAccess == null || realmAccess.get("roles") == null) {
             return List.of();
         }
-        // We check if the "roles" claim is a collection of strings.
-        // If not, we return an empty list of authorities.
+
         Object rolesClaim = realmAccess.get("roles");
+        // We only continue if the claim really is a collection of values.
         if (!(rolesClaim instanceof Collection<?> roles)) {
             return List.of();
         }
-        // We filter the roles to include only those that are in our defined set of business roles,
-        // and we prefix them with "ROLE_" to conform to Spring Security's convention for roles.
-        return roles.stream() // Start looping through the roles one by one.
+
+        return roles.stream()
                 .filter(String.class::isInstance) // Keep only items that are strings.
-                .map(String.class::cast) // Convert the remaining items to strings.
-                .filter(BUSINESS_ROLES::contains) // Keep only roles that we defined above in the BUSINESS_ROLES set.
-                .map(role -> "ROLE_" + role) // Prefix the role with "ROLE_" to follow Spring Security's convention for role names.
-                .map(SimpleGrantedAuthority::new) // Convert the role string into a SimpleGrantedAuthority object, which is what Spring Security uses to represent authorities.
-                .collect(Collectors.toList()); // Collect the resulting stream of authorities into a list and return it.
+                .map(String.class::cast) // Convert those items into String values.
+                .filter(BUSINESS_ROLES::contains) // Keep only ADMIN, ANALYST, and AUDITOR.
+                .map(role -> "ROLE_" + role) // Prefix with ROLE_ to match Spring Security conventions.
+                .map(SimpleGrantedAuthority::new) // Turn each role into a GrantedAuthority object.
+                .collect(Collectors.toList());
     }
 }
 
-// Basically, this code configures Spring Security to use JWT tokens for authentication and authorization.
-// It defines which endpoints require authentication
-// and how to extract roles from the JWT token to determine the user's authorities.
-// The roles are prefixed with "ROLE_" to conform to Spring Security's convention.
+/*
+The flow:
+1. The request arrives with a JWT token.
+2. Spring Security validates whether that token is authentic and trusted.
+3. Our converter extracts the business roles from realm_access.roles.
+4. Spring Security turns those roles into authorities like ROLE_ANALYST.
+5. The access rules above decide whether the request is allowed or denied.
+*/
