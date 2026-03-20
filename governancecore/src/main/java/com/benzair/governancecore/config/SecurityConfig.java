@@ -46,7 +46,7 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 // Define who can access which routes.
                 .authorizeHttpRequests(auth -> auth
-                        // Any authenticated business role can read assets.
+                        // User must be logged in and must have one of these roles.
                         .requestMatchers(HttpMethod.GET, "/api/v1/assets/**").hasAnyRole("ADMIN", "ANALYST", "AUDITOR")
                         // Only ADMIN and ANALYST can create, update, or delete assets.
                         .requestMatchers(HttpMethod.POST, "/api/v1/assets/**").hasAnyRole("ADMIN", "ANALYST")
