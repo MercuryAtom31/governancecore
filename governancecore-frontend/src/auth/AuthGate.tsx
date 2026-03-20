@@ -3,7 +3,7 @@ import { useEffect } from "react";
 import type { PropsWithChildren } from "react";
 // The following import is responsible for handling authentication with Keycloak using OpenID Connect.
 import { useAuth } from "react-oidc-context";
-// This function component serves as a gatekeeper for the application, ensuring that only authenticated users can access its content. 
+// This function component serves as a gatekeeper for the application, ensuring that only authenticated users can access its content.
 // It uses the useAuth hook to manage authentication state and redirects unauthenticated users to the Keycloak login page.
 export default function AuthGate({ children }: PropsWithChildren) {
   // The useAuth hook provides access to the authentication state and methods.
