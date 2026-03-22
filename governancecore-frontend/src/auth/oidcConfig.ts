@@ -1,4 +1,5 @@
 import type { AuthProviderProps } from "react-oidc-context";
+
 // This file defines the configuration for OpenID Connect (OIDC) authentication using the react-oidc-context library.
 // The oidcConfig object contains all the necessary settings for connecting to the OIDC provider (Keycloak in this case).
 export const oidcConfig: AuthProviderProps = {
@@ -17,3 +18,7 @@ export const oidcConfig: AuthProviderProps = {
     window.history.replaceState({}, document.title, window.location.pathname);
   },
 };
+
+// react-oidc-context stores the authenticated user under this localStorage key format.
+// We reuse the same key so Axios can read the current access token for API calls.
+export const oidcStorageKey = `oidc.user:${oidcConfig.authority}:${oidcConfig.client_id}`;

@@ -2,6 +2,8 @@
 // Axios is a JavaScript library that lets our frontend talk to our backend.
 import axios from "axios";
 
+import { getAccessToken } from "../auth/tokenStorage";
+
 // axios.create() = builds a configured client
 export const api = axios.create({
 // What Does ?? "" Mean?
@@ -11,6 +13,18 @@ export const api = axios.create({
   baseURL: import.meta.env.VITE_API_BASE_URL ?? "",
   // keep false unless we're using cookies/session auth
   withCredentials: false,
+});
+
+// Before each request, Axios checks whether the frontend currently has an OIDC access token.
+// If it does, Axios adds the Authorization header automatically.
+api.interceptors.request.use((config) => {
+  const token = getAccessToken();
+
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+
+  return config;
 });
 
 /*
