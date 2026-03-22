@@ -1,179 +1,287 @@
-# Governance Core — ISMS/GRC Platform
+# Governance Core - ISMS / GRC Platform
 
-Governance Core is a production-focused Information Security Management System (ISMS) backend built with Spring Boot. It centralizes security governance in one platform, replacing scattered spreadsheets and documents with structured, audit-ready workflows.
+Governance Core is an Information Security Management System (ISMS) / Governance, Risk, and Compliance (GRC) platform built with Spring Boot and React. It centralizes security governance in one system instead of spreading assets, risks, controls, and evidence across spreadsheets and documents.
 
 ## Product Vision
 
-Organizations pursuing compliance certifications (ISO 27001, SOC 2) struggle to maintain traceability between their assets, risks, controls, and evidence. Governance Core solves this by providing a single system where security teams, engineering managers, and auditors can collaborate.
+Organizations working toward compliance frameworks such as ISO 27001 and SOC 2 need traceability between what they protect, the risks they track, the controls they implement, and the evidence they present.
 
-The core outcome is end-to-end traceability:
+Governance Core is being built to provide that traceability in one platform:
 
-```
-Asset → Risk → Control → Evidence
+```text
+Asset -> Risk -> Control -> Evidence
 ```
 
 ## Who This Is For
 
 | Role | How they use it |
 |---|---|
-| Security / GRC Teams | Manage risks, map controls, track compliance status |
-| Engineering Managers | Own assets, assign access, track remediation |
-| Auditors / Compliance | Review evidence, verify control implementation |
+| Security / GRC Teams | Manage governance records, map controls, track compliance status |
+| Engineering Managers | Own systems and assets, track remediation and accountability |
+| Auditors / Compliance | Review evidence, verify controls, inspect read-only records |
 
 ## Current Status
 
-**Phase 1 — AssetSubdomain (Active)**
+**Current vertical slice: AssetSubdomain + Security Foundation**
 
-The first vertical slice of the platform is being built following DDD subdomain organization with n-tier layering. Once complete, this pattern is replicated for every subsequent subdomain.
-
-Current capabilities:
+Implemented backend capabilities:
 - Create an asset
-- List all assets (paginated)
+- List all assets
 - Get asset by ID
 - Update an asset
 - Delete an asset
 
+Implemented security capabilities:
+- Spring Security configured as an OAuth2 Resource Server
+- JWT validation through Keycloak issuer metadata
+- Role extraction from `realm_access.roles`
+- RBAC roles: `ADMIN`, `ANALYST`, `AUDITOR`
+- `/api/v1/auth/me` endpoint returning authenticated user info
+- Role-based backend rules on asset endpoints
+
+Implemented frontend capabilities:
+- React + TypeScript asset list/create flow
+- OIDC login redirect with Keycloak
+- Auth provider and auth gate in the frontend
+- Frontend sign-out flow
+
 ## Architecture
 
-The backend is organized as DDD subdomains, each with strict n-tier layering inside:
+### Backend
 
-```
+The backend is organized by subdomain, with n-tier layering inside each subdomain:
+
+```text
 assetsubdomain/
-  presentationlayer/    → REST controllers + request/response DTOs
-  businesslayer/        → service interfaces + use-case implementations
-  datalayer/            → JPA entities + repositories
-  datamapperlayer/      → MapStruct mappers (entity ↔ DTO)
+  presentationlayer/    -> REST controllers + request/response models
+  businesslayer/        -> service interfaces + use-case implementations
+  datalayer/            -> JPA entities + repositories
+  datamapperlayer/      -> mapping between entities and API models
 
-shared/
-  exceptions/           → custom exception classes
-  advice/               → @RestControllerAdvice (global error handling)
+authsubdomain/
+  presentationlayer/    -> authenticated user endpoints (`/api/v1/auth/me`)
+
+config/
+  SecurityConfig.java   -> Spring Security + JWT + RBAC configuration
+  CorsConfig.java       -> CORS rules for frontend/backend communication
+
+utils/
+  GlobalControllerExceptionHandler.java
+  HttpErrorInfo.java
+  exceptions/
 ```
 
-**Subdomain boundary rule:** subdomains reference each other only by ID — no entity imports across subdomain boundaries. This keeps the architecture clean and ready to scale.
+**Subdomain boundary rule:** subdomains reference each other by ID instead of importing each other's entities directly.
+
+### Frontend
+
+The frontend follows a feature-based structure with separation of concerns:
+
+```text
+src/
+  features/
+    assets/
+      api/              -> backend HTTP calls
+      hooks/            -> state + side effects
+      pages/            -> route-level UI
+      components/       -> feature UI pieces
+      types/            -> feature contracts
+  auth/
+    oidcConfig.ts       -> OIDC client configuration
+    AuthGate.tsx        -> redirects unauthenticated users to login
+  lib/
+    axios.ts            -> shared HTTP client
+  ui/                   -> reusable UI primitives
+```
 
 ## Tech Stack
 
-### Current
+### Backend
+
 | Technology | Purpose |
 |---|---|
 | Java 21 | Core language |
 | Spring Boot 3.5.x | Application framework |
 | Spring Web | REST API layer |
 | Spring Data JPA | Database access |
-| PostgreSQL | Production database |
+| Spring Security | API protection and RBAC |
+| OAuth2 Resource Server | JWT validation for protected endpoints |
 | Flyway | Database schema migrations |
-| Jakarta Validation | Request validation (`@NotBlank`, etc.) |
+| H2 / PostgreSQL | Development and production databases |
+| Jakarta Validation | Request validation |
 | Lombok | Boilerplate reduction |
-| MapStruct | Type-safe DTO ↔ entity mapping |
-| Gradle (Groovy) | Build tool |
-
-### Testing
-| Technology | Purpose |
-|---|---|
-| JUnit 5 | Test framework |
-| Mockito | Service unit tests |
-| MockMvc | Controller integration tests |
-| H2 | In-memory database for fast test runs |
-
-### Planned
-| Technology | Purpose |
-|---|---|
-| Spring Security | Endpoint protection |
-| OAuth2 (Google / GitHub) | Delegated authentication — no password management |
-| RBAC | Role-based access (Admin, Analyst, Auditor) |
-| Docker + docker-compose | Containerized deployment |
+| Gradle | Build tool |
 
 ### Frontend
+
 | Technology | Purpose |
 |---|---|
 | React | Component-based UI |
 | TypeScript | Type-safe frontend development |
+| React Router | Routing |
+| Axios | HTTP client |
+| react-oidc-context | OIDC login flow integration |
+| oidc-client-ts | OIDC client support |
 | CSS | Styling |
 
-## Authentication Design
+### Testing
 
-The platform will use **OAuth2** for authentication (via Google or GitHub), meaning users log in through a trusted identity provider rather than managing passwords directly. This is implemented using Spring Security's built-in OAuth2 support — not a third-party service like Auth0.
+| Technology | Purpose |
+|---|---|
+| JUnit 5 | Test framework |
+| Mockito | Service unit tests |
+| MockMvc | Controller/web tests |
+| H2 | In-memory test database |
 
-After OAuth2 login, the platform issues tokens for session management and enforces **role-based access control (RBAC)**:
+## Security Design
 
-- **Admin** — full platform access
-- **Analyst** — create and manage risks, controls, assets
-- **Auditor** — read-only access to evidence and reports
+Governance Core uses **Keycloak** as the local Identity Provider (IdP).
 
-## Database Migrations
+### What that means
 
-Flyway manages all schema changes in a versioned, ordered manner — think of it as Git for your database schema.
+- Keycloak confirms **who the user is**
+- Spring Security decides **what the user is allowed to do**
+- The backend trusts JWTs issued by the `governance-core` realm
+- The frontend uses OIDC to redirect users to Keycloak for login
 
-Migration scripts live in:
-```
-src/main/resources/db/migration/
-```
+### Roles
 
-Naming convention:
-```
-V1__create_assets_table.sql
-V2__create_risks_table.sql
-V3__add_description_to_assets.sql
-```
+- `ADMIN` - full platform access
+- `ANALYST` - can create, update, and manage governance records
+- `AUDITOR` - read-only access for verification and review
 
-Flyway runs automatically at startup and only applies migrations that have not yet been executed.
+### Current backend RBAC rules
+
+- `GET /api/v1/assets/**` -> `ADMIN`, `ANALYST`, `AUDITOR`
+- `POST /api/v1/assets/**` -> `ADMIN`, `ANALYST`
+- `PUT /api/v1/assets/**` -> `ADMIN`, `ANALYST`
+- `DELETE /api/v1/assets/**` -> `ADMIN`, `ANALYST`
+- `GET /api/v1/auth/me` -> any authenticated user
 
 ## Local Development Setup
 
 ### Prerequisites
+
 - Java 21
-- PostgreSQL running locally
-- Gradle
+- Node.js + npm
+- Docker
 
-### Database configuration
+## Run Keycloak locally
 
-In `src/main/resources/application.yaml`:
+Start Keycloak with persistent storage:
+
+```powershell
+docker run -p 8081:8080 `
+  -e KC_BOOTSTRAP_ADMIN_USERNAME=admin `
+  -e KC_BOOTSTRAP_ADMIN_PASSWORD=admin `
+  -v keycloak_data:/opt/keycloak/data `
+  quay.io/keycloak/keycloak:latest start-dev
+```
+
+Keycloak will be available at:
+
+```text
+http://localhost:8081
+```
+
+### Required local Keycloak setup
+
+Realm:
+- `governance-core`
+
+Realm roles:
+- `ADMIN`
+- `ANALYST`
+- `AUDITOR`
+
+Test users:
+- `admin.user`
+- `analyst.user`
+- `auditor.user`
+
+Frontend client:
+- `governancecore-frontend`
+
+Key frontend client settings:
+- Client type: `OpenID Connect`
+- Client authentication: `Off`
+- Standard flow: `On`
+- PKCE method: `S256`
+- Root URL: `http://localhost:5173`
+- Home URL: `http://localhost:5173`
+- Valid redirect URIs: `http://localhost:5173/*`
+- Valid post logout redirect URIs: `http://localhost:5173/*`
+- Web origins: `http://localhost:5173`
+
+## Backend configuration
+
+The backend trusts JWTs from Keycloak using the issuer URI in:
+
+- `governancecore/src/main/resources/application.yaml`
+
+Relevant setting:
 
 ```yaml
 spring:
-  datasource:
-    url: jdbc:postgresql://localhost:5432/governancecore
-    username: your_user
-    password: your_password
-  flyway:
-    enabled: true
-    locations: classpath:db/migration
+  security:
+    oauth2:
+      resourceserver:
+        jwt:
+          issuer-uri: http://localhost:8081/realms/governance-core
 ```
 
-### Run the application
+## Run the backend
 
-```bash
-# Linux / Mac
-./gradlew bootRun
-
-# Windows
-gradlew.bat bootRun
+```powershell
+cd governancecore
+.\gradlew.bat bootRun --args='--spring.profiles.active=local'
 ```
 
-Flyway migrations execute automatically at startup before any JPA operations.
+## Run the frontend
 
-### Run tests
-
-```bash
-./gradlew test
+```powershell
+cd governancecore-frontend
+npm install
+npm run dev
 ```
 
-Integration tests use H2 in-memory database — no PostgreSQL required for testing.
+The frontend will be available at:
+
+```text
+http://localhost:5173
+```
+
+## Authentication Flow
+
+Current login flow:
+
+1. User opens the React frontend
+2. The frontend auth gate checks whether the user is authenticated
+3. If not, the frontend redirects the user to Keycloak
+4. Keycloak authenticates the user and issues tokens
+5. Keycloak redirects the user back to the frontend
+6. The frontend uses the authenticated session to call the protected backend
+7. Spring Security validates the JWT and applies RBAC rules
+
+## Useful Endpoints
+
+- `GET /api/v1/assets`
+- `POST /api/v1/assets`
+- `GET /api/v1/auth/me`
 
 ## Roadmap
 
-| Phase | Subdomain | Description |
+| Phase | Area | Description |
 |---|---|---|
-| 1 ✅ | AssetSubdomain | Asset inventory — the foundation everything attaches to |
-| 2 | RiskSubdomain | Risk register with automatic scoring (likelihood × impact) |
-| 3 | ControlSubdomain | ISO 27001 control catalog + Statement of Applicability |
-| 4 | EvidenceSubdomain | Audit evidence metadata + links to risks/controls/assets |
-| 5 | Security | OAuth2 login + Spring Security + RBAC |
-| 6 | IAMSubdomain | Access assignments, access reviews, quarterly workflow |
-| 7 | AppSecSubdomain | Vulnerability tracking + SDLC artifacts + compliance mapping |
-| 8 | Reporting | Audit-ready traceability reports (Asset → Risk → Control → Evidence) |
-| 9 | Deployment | Docker + docker-compose + React/TypeScript frontend |
+| 1 | AssetSubdomain | Asset inventory foundation |
+| 2 | Security Foundation | Keycloak + Spring Security + OIDC frontend login |
+| 3 | RiskSubdomain | Risk register and scoring |
+| 4 | ControlSubdomain | Control catalog and traceability |
+| 5 | EvidenceSubdomain | Evidence records and linkage |
+| 6 | IAMSubdomain | Access assignments, reviews, and workflows |
+| 7 | Reporting | Audit-ready traceability reports |
+| 8 | Deployment | Containerized local and deployment setup |
 
 ## Project Status
 
-Active development — Phase 1 in progress.
+Active development.
