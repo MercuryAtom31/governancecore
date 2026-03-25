@@ -1,3 +1,6 @@
+// WebStorageStateStore =
+// "Where should I store the logged-in user and tokens in the browser?"
+import { WebStorageStateStore } from "oidc-client-ts";
 import type { AuthProviderProps } from "react-oidc-context";
 
 // This file defines the configuration for OpenID Connect (OIDC) authentication using the react-oidc-context library.
@@ -9,6 +12,9 @@ export const oidcConfig: AuthProviderProps = {
   post_logout_redirect_uri: import.meta.env.VITE_OIDC_POST_LOGOUT_REDIRECT_URI,
   response_type: "code", // The type of response expected from the OIDC provider.
   scope: "openid profile email", // The scope of access requested from the OIDC provider.
+  // We explicitly store the authenticated OIDC user in sessionStorage.
+  // This keeps the auth session limited to the current browser tab/session.
+  userStore: new WebStorageStateStore({ store: window.sessionStorage }),
   // The onSigninCallback function is called after a successful sign-in.
   // It replaces the current history state to remove any query parameters or fragments added by the OIDC provider during the authentication process.
   // In other words, it cleans up the URL after the user has been redirected back from the OIDC provider, ensuring a cleaner user experience.
@@ -19,6 +25,6 @@ export const oidcConfig: AuthProviderProps = {
   },
 };
 
-// react-oidc-context stores the authenticated user under this localStorage key format.
+// react-oidc-context stores the authenticated user under this key format.
 // We reuse the same key so Axios can read the current access token for API calls.
 export const oidcStorageKey = `oidc.user:${oidcConfig.authority}:${oidcConfig.client_id}`;
