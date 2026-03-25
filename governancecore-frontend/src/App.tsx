@@ -15,8 +15,8 @@ function AppLayout() {
     <div>
       <nav>
         <Link to="/assets">Assets</Link>
-        // If the user information is still loading, we show "Loading user...".
-        // Otherwise, if we have the current user's information, we display their username.
+        {/* If the user information is still loading, we show "Loading user...".
+        Otherwise, if we have the current user's information, we display their username. */}
         {loading ? <span>Loading user...</span> : currentUser && <span>{currentUser.username}</span>}
         <button className="signOutButton" type="button" onClick={() => void auth.signoutRedirect()}>
           Sign out
