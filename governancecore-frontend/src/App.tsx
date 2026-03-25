@@ -2,6 +2,7 @@ import { Routes, Route, Link, Navigate } from "react-router-dom";
 import { useAuth } from "react-oidc-context";
 import AuthGate from "./auth/AuthGate";
 import AssetListPage from "./features/assets/pages/AssetListPage";
+import "./App.css";
 
 function App() {
   const auth = useAuth();
@@ -15,7 +16,7 @@ function App() {
       <div>
         <nav>
           <Link to="/assets">Assets</Link>
-          <button type="button" onClick={() => void auth.signoutRedirect()}>
+          <button className="signOutButton" type="button" onClick={() => void auth.signoutRedirect()}>
             Sign out
           </button>
         </nav>
