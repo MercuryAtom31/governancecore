@@ -12,8 +12,8 @@ function AppLayout() {
   const { currentUser, loading } = useCurrentUser();
 
   return (
-    <div>
-      <nav>
+    <div className="app-shell">
+      <nav className="app-nav">
         <Link to="/assets">Assets</Link>
         {/* If the user information is still loading, we show "Loading user...".
         Otherwise, if we have the current user's information, we display their username. */}
@@ -23,10 +23,16 @@ function AppLayout() {
         </button>
       </nav>
 
-      <Routes>
-        <Route path="/" element={<Navigate to="/assets" replace />} />
-        <Route path="/assets" element={<AssetListPage />} />
-      </Routes>
+      <main className="app-content">
+        <Routes>
+          <Route path="/" element={<Navigate to="/assets" replace />} />
+          <Route path="/assets" element={<AssetListPage />} />
+        </Routes>
+      </main>
+
+      <footer className="app-footer" aria-label="Application footer">
+        <p className="app-footer__signature">By Hichem Benzaïr</p>
+      </footer>
     </div>
   );
 }
@@ -42,4 +48,3 @@ function App() {
 }
 
 export default App;
-

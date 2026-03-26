@@ -1,3 +1,81 @@
+@import url('https://fonts.googleapis.com/css2?family=Yellowtail&display=swap');
+
+.app-shell {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.app-nav {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.app-content {
+  flex: 1;
+}
+
+.app-footer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2.25rem 1.5rem 4rem;
+}
+
+.app-footer__signature {
+  position: relative;
+  display: inline-block;
+  font-family: "Yellowtail", cursive;
+  font-size: 2rem;
+  font-weight: 400;
+  letter-spacing: 0.02em;
+  color: #f8ffff;
+  text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+  animation: footerGlitch 10s infinite;
+  -webkit-box-reflect: below 2px linear-gradient(to bottom,
+      rgba(255, 255, 255, 0.34) 0%,
+      rgba(34, 211, 238, 0.18) 20%,
+      rgba(34, 211, 238, 0.08) 46%,
+      transparent 84%);
+}
+
+@keyframes footerGlitch {
+
+  0%,
+  100% {
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+    transform: translate(0);
+  }
+
+  10% {
+    text-shadow: 2px 0 0 #ff00ff, -2px 0 0 #00ffff;
+    transform: translate(-2px, 0);
+  }
+
+  20% {
+    text-shadow: 2px 0 0 #ff00ff, -2px 0 0 #00ffff;
+    transform: translate(2px, 0);
+  }
+
+  30%,
+  70% {
+    text-shadow: 0 0 10px #00ffff, 0 0 20px #00ffff, 0 0 30px #00ffff;
+    transform: translate(0);
+  }
+
+  80% {
+    text-shadow: -2px 0 0 #ff00ff, 2px 0 0 #00ffff;
+    transform: translate(2px, 0);
+  }
+
+  90% {
+    text-shadow: -2px 0 0 #ff00ff, 2px 0 0 #00ffff;
+    transform: translate(-2px, 0);
+  }
+
+}
+
 .signOutButton {
   background-color: transparent;
   border: none;

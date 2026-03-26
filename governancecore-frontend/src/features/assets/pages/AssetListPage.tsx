@@ -10,7 +10,7 @@ export default function AssetListPage() {
   // Call the function useCurrentUser(), and take only the currentUser value from what it returns.
   // Get the current user's information, including their roles, to determine if they have permission to manage assets.
   const { currentUser } = useCurrentUser();
-  // Determine if the current user has the "ADMIN" or "ANALYST" role, which grants them permission to manage assets. 
+  // Determine if the current user has the "ADMIN" or "ANALYST" role, which grants them permission to manage assets.
   // This is used to conditionally render the asset creation form and restrict access for read-only users.
   // This checks whether the roles array contains "ADMIN", etc.
   const canManageAssets =
