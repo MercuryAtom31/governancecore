@@ -1,10 +1,15 @@
 import "./AssetListPage.css";
 import Card from "../../../ui/Card";
+import { useCurrentUser } from "../../../auth/useCurrentUser";
 import AddAssetModal from "../components/AddAssetModal";
 import { useAssets } from "../hooks/useAssets";
 
 export default function AssetListPage() {
   const { assets, loading, error, addAsset } = useAssets();
+  const { currentUser } = useCurrentUser();
+
+  const canManageAssets =
+    currentUser?.roles.includes("ADMIN") || currentUser?.roles.includes("ANALYST");
 
   return (
     <div className="assets-page">
@@ -16,9 +21,17 @@ export default function AssetListPage() {
         </p>
       </div>
 
-      <Card className="assets-page__form-card">
-        <AddAssetModal onCreate={addAsset} />
-      </Card>
+      {canManageAssets ? (
+        <Card className="assets-page__form-card">
+          <AddAssetModal onCreate={addAsset} />
+        </Card>
+      ) : (
+        <Card className="assets-page__form-card assets-page__read-only-card">
+          <p className="assets-page__read-only-message">
+            Your current role is read-only. You can review assets, but only analysts and admins can create them.
+          </p>
+        </Card>
+      )}
 
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
