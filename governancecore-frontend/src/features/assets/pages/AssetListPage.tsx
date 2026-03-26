@@ -1,13 +1,18 @@
 import "./AssetListPage.css";
 import Card from "../../../ui/Card";
+// This imports the useCurrentUser hook to access the current user's information, including their roles, which is used to determine if they can manage assets.
 import { useCurrentUser } from "../../../auth/useCurrentUser";
 import AddAssetModal from "../components/AddAssetModal";
 import { useAssets } from "../hooks/useAssets";
 
 export default function AssetListPage() {
   const { assets, loading, error, addAsset } = useAssets();
+  // Call the function useCurrentUser(), and take only the currentUser value from what it returns.
+  // Get the current user's information, including their roles, to determine if they have permission to manage assets.
   const { currentUser } = useCurrentUser();
-
+  // Determine if the current user has the "ADMIN" or "ANALYST" role, which grants them permission to manage assets. 
+  // This is used to conditionally render the asset creation form and restrict access for read-only users.
+  // This checks whether the roles array contains "ADMIN", etc.
   const canManageAssets =
     currentUser?.roles.includes("ADMIN") || currentUser?.roles.includes("ANALYST");
 
@@ -20,7 +25,10 @@ export default function AssetListPage() {
           governance lifecycle.
         </p>
       </div>
-
+      {/* Conditionally render the asset creation form based on the user's permissions.
+      If the user can manage assets, show the AddAssetModal; otherwise, show a read-only message.
+      This is called conditional rendering with a ternary operator.
+      */}
       {canManageAssets ? (
         <Card className="assets-page__form-card">
           <AddAssetModal onCreate={addAsset} />
