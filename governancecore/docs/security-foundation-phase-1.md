@@ -2,7 +2,7 @@
 
 This document defines the first security implementation phase for Governance Core.
 
-The goal of this phase is not to build the full IAM subdomain yet.
+The goal of this phase is not to build the full IAM governance domain yet.
 The goal is to establish the authentication and authorization foundation that the rest of the platform will rely on.
 
 This means:
@@ -29,12 +29,13 @@ By the end of this phase, the system should support:
 This phase is intentionally limited.
 
 It does **not** yet include:
-- full IAM workflows
+- full IAM lifecycle workflows
 - access review campaigns
-- user administration UI
+- rich user administration UI
 - privileged access attestation workflows
 - multi-tenant identity boundaries
 - advanced policy engines
+- complete provisioning integrations
 
 Those belong to later phases.
 
@@ -42,7 +43,7 @@ Those belong to later phases.
 
 ## 2. Security Scope for This Phase
 
-This phase covers two security layers:
+This phase covers two security layers.
 
 ### Authentication
 Authentication answers:
@@ -58,6 +59,12 @@ Authorization answers:
 > What is this user allowed to do?
 
 The platform will enforce authorization using roles and route/method-level access rules.
+
+### Plain English explanation
+
+This phase establishes the security boundary of the system.
+
+It makes sure the platform knows who the user is and what that user is allowed to do before more advanced IAM workflows are added.
 
 ---
 
@@ -100,7 +107,7 @@ Phase 1 uses the role model already defined in the product documentation.
 Purpose:
 - platform oversight
 - governance authority
-- full access
+- full access to administrative functions
 
 #### ANALYST
 Purpose:
@@ -158,7 +165,7 @@ Frontend restrictions improve UX, but the **backend remains the real security bo
 
 ## 6. Architecture Decision
 
-Security will be introduced in this order:
+Security is introduced in this order:
 
 1. define the rules
 2. build backend security foundation
@@ -171,10 +178,10 @@ This avoids implementing UI behavior before real backend enforcement.
 
 ---
 
-## 7. Backend Foundation to Implement
+## 7. Backend Foundation Implemented in This Phase
 
 ### Dependencies
-The backend must add:
+The backend adds:
 - `spring-boot-starter-security`
 - `spring-boot-starter-oauth2-resource-server`
 
@@ -192,30 +199,22 @@ That means:
 ## 8. Core Backend Security Components
 
 ### 8.1 Security Configuration
-Create:
-
-`src/main/java/com/benzair/governancecore/config/SecurityConfig.java`
-
-This class will define:
+`SecurityConfig.java` defines:
 - which routes are public
 - which routes require authentication
 - how JWT authentication is enabled
 - how CORS is handled under Spring Security
 - how role-based access rules are enforced
 
-Initial baseline:
+Phase 1 baseline:
 - `/api/v1/auth/me` -> authenticated
-- `/api/v1/assets/**` -> authenticated
+- `/api/v1/assets/**` -> role-aware access rules
 - future routes will be added gradually
 
 ---
 
 ### 8.2 JWT Resource Server Configuration
-Add resource server settings in:
-- `application.yaml`
-- or profile-specific environment settings if needed
-
-This will include the identity provider issuer URI.
+Resource server settings are added in application configuration, including the identity provider issuer URI.
 
 Purpose:
 - Spring Boot does not invent identity
@@ -225,12 +224,8 @@ Purpose:
 ---
 
 ### 8.3 JWT Authority Mapping
-This is a required step.
-
 A JWT does not automatically become Spring roles the way the application needs.
-The backend must explicitly map token claims into Spring authorities.
-
-This means creating a converter that maps identity-provider role claims into authorities like:
+The backend explicitly maps token claims into authorities like:
 - `ROLE_ADMIN`
 - `ROLE_ANALYST`
 - `ROLE_AUDITOR`
@@ -246,11 +241,11 @@ This is one of the most important IAM learning points in the backend.
 ---
 
 ### 8.4 `/api/v1/auth/me`
-Add the endpoint:
+Phase 1 includes the endpoint:
 
 `GET /api/v1/auth/me`
 
-This endpoint should return trusted current-user data such as:
+This endpoint returns trusted current-user data such as:
 - username
 - email
 - roles
@@ -261,12 +256,10 @@ Purpose:
 - confirm role extraction works
 - provide a trusted bridge from backend security to frontend UI logic
 
-This endpoint is the first security-aware API endpoint and should be implemented early.
-
 ---
 
 ### 8.5 Asset Endpoint Protection
-After the security foundation is working, apply role rules to the Asset feature.
+After the security foundation is working, role rules are applied to the Asset feature.
 
 This can be enforced through:
 - route security rules
@@ -303,11 +296,11 @@ Because backend role mapping should be based on real token structure, not guesse
 
 The frontend should be secured **after** backend enforcement exists.
 
-### Frontend Tasks
-- create `AuthContext` or equivalent auth state provider
+### Frontend Tasks in Phase 1
+- create OIDC login setup
+- create current-user provider/state
 - call `/api/v1/auth/me`
 - store current user identity and roles
-- create role helpers
 - protect routes
 - conditionally hide or disable write actions for auditors
 
@@ -319,7 +312,7 @@ The backend is the actual enforcement boundary.
 
 ---
 
-## 11. Exact Implementation Order
+## 11. Exact Implementation Order for Phase 1
 
 ### Step 1 - Documentation
 Create and maintain this file:
@@ -362,7 +355,7 @@ Apply role rules to current asset endpoints.
 
 ### Step 10 - Frontend Auth State
 Add:
-- auth context
+- OIDC auth provider
 - current user loading
 - role-aware rendering
 
@@ -413,20 +406,44 @@ Learn:
 
 ## 13. What This Phase Does Not Yet Build
 
-This phase intentionally does not yet implement the IAM subdomain workflows such as:
-- access assignment records
+This phase intentionally does not yet implement the deeper IAM governance workflows such as:
+- access assignment records as domain entities
 - access request workflow
 - quarterly access review workflow
 - manager approvals
 - privileged access attestations
-- user administration screens
+- full user administration screens inside Governance Core
 - identity lifecycle automation
+- provisioning connectors to external systems
+- rich audit dashboards
 
 These remain important, but they depend on the security foundation established here.
 
 ---
 
-## 14. Final Summary
+## 14. What Comes Immediately After Phase 1
+
+Once the security foundation is in place, the next implementation priorities are:
+
+1. audit logging as a backend capability
+2. access lifecycle workflows
+   - assign role
+   - change role
+   - revoke role
+   - disable access
+3. stronger frontend role-aware behavior
+4. provisioning / deprovisioning simulation
+5. richer admin and audit UI built on top of real backend workflows
+
+### Plain English explanation
+
+Phase 1 teaches the system how to authenticate users and enforce roles.
+
+The next phase teaches the system how access changes over time and how those changes are recorded.
+
+---
+
+## 15. Final Summary
 
 Phase 1 security is the identity and authorization base layer of Governance Core.
 
@@ -438,17 +455,4 @@ It introduces:
 - role-aware frontend behavior
 - the first secured feature: Assets
 
-The purpose of this phase is to ensure that future subdomains are built on top of real security boundaries from the beginning, not retrofitted at the end.
-
----
-
-## 15. Immediate Next Coding Target
-
-The next coding target after this document is:
-
-1. add Spring Security dependencies
-2. run local Keycloak
-3. inspect token claims
-4. create `SecurityConfig.java`
-
-That is the correct foundation for the next phase of the project.
+The purpose of this phase is to ensure that future access-governance and audit workflows are built on top of real security boundaries from the beginning, not retrofitted at the end.
