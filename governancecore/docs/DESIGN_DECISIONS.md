@@ -102,7 +102,44 @@ This is more educational and more aligned with enterprise IAM concepts than usin
 
 ---
 
-## 3. Spring Security as Resource Server
+## 3. Governance Core Does Not Replace the Identity Provider
+
+### Decision
+
+Governance Core does not try to become its own identity provider or full replacement for Keycloak.
+
+Keycloak remains responsible for:
+
+- authentication
+- token issuance
+- core identity provider behavior
+
+Governance Core focuses on:
+
+- access governance
+- role-aware application behavior
+- access lifecycle changes
+- auditability
+- compliance-oriented traceability
+
+### Why
+
+Trying to rebuild identity-provider behavior inside the application would blur responsibilities and weaken the project architecture.
+
+The stronger design is to treat authentication and governance as separate concerns:
+
+- the IdP confirms who the user is
+- Governance Core decides how access is governed, reviewed, changed, and recorded
+
+### Plain English explanation
+
+Keycloak answers: "Who is this user?"
+
+Governance Core answers: "What access should this user have, how does that access change, and how do we audit those changes?"
+
+---
+
+## 4. Spring Security as Resource Server
 
 ### Decision
 
@@ -119,7 +156,7 @@ This allows Spring Security to:
 
 ---
 
-## 4. Role Mapping from Keycloak to Spring Security
+## 5. Role Mapping from Keycloak to Spring Security
 
 ### Decision
 
@@ -137,7 +174,7 @@ Explicit role mapping ensures backend rules such as `hasRole(...)` and `hasAnyRo
 
 ---
 
-## 5. Backend-First Enforcement, Frontend-Second Reflection
+## 6. Backend-First Enforcement, Frontend-Second Reflection
 
 ### Decision
 
@@ -148,3 +185,102 @@ Authorization rules are enforced in the backend first, then reflected in the fro
 Frontend-only hiding is not security.
 
 The backend must remain the source of truth for access control, and the frontend should reflect those rules only after backend enforcement is correct.
+
+### Plain English explanation
+
+If the backend does not block an action, the system is not secure.
+
+If the frontend does not reflect the same rule, the system is confusing.
+
+So the correct order is:
+
+1. enforce in backend
+2. reflect in frontend
+
+---
+
+## 7. Audit Logging Is a First-Class Backend Concern
+
+### Decision
+
+Audit logging will be implemented as a core backend capability before building a rich admin dashboard.
+
+Audit events should capture at least:
+
+- actor
+- action
+- target type
+- target identifier
+- timestamp
+- outcome
+
+### Why
+
+Audit is not a presentation feature. It is a system behavior.
+
+If the project wants to demonstrate IAM governance and compliance value, it must first generate trustworthy audit records before it visualizes them.
+
+### Plain English explanation
+
+A dashboard that shows logs is only useful if the logging model is already correct.
+
+So the system must learn how to record important IAM and governance events before it tries to display them nicely.
+
+---
+
+## 8. Access Lifecycle Workflows Before Admin Dashboards
+
+### Decision
+
+Access lifecycle workflows are prioritized before a broad admin dashboard UI.
+
+The core lifecycle operations are:
+
+- assign role
+- change role
+- revoke role
+- disable access
+
+### Why
+
+These workflows are closer to real IAM value than simply building management screens.
+
+A polished dashboard without real lifecycle logic underneath would make the project look shallow.
+
+The stronger sequence is:
+
+1. implement lifecycle behavior
+2. audit it
+3. then expose it through admin pages
+
+### Plain English explanation
+
+The important part is not drawing an admin page.
+
+The important part is making access change correctly over time.
+
+---
+
+## 9. Provisioning and Deprovisioning Start as Simulation
+
+### Decision
+
+Provisioning and deprovisioning will first be implemented as explicit application workflows or simulations before attempting deeper external-system integration.
+
+Examples include:
+
+- new user receives initial role assignment
+- existing user changes role
+- departing user loses access
+
+### Why
+
+This keeps the project realistic and teachable.
+
+It allows the project to model Joiner / Mover / Leaver (JML) behavior clearly without prematurely taking on the complexity of full enterprise connector integration.
+
+### Plain English explanation
+
+First show that the system understands how access should be granted, changed, and removed.
+
+Only after that should it worry about more advanced automation or external provisioning integrations.
