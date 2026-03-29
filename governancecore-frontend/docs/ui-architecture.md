@@ -1,386 +1,291 @@
-# Governance Core — UI Architecture & Design Specification (Updated)
+# Governance Core - UI Architecture
+
+This document explains how the frontend is structured and how the UI reflects the platform's security and governance model.
+
+The UI is not treated as a separate decorative layer.
+It is an application surface that should make governance, role boundaries, and current system state understandable without weakening the backend security model.
 
 ---
 
 ## 1. UI Philosophy
 
-Governance Core is a security governance engine — not a generic CRUD application.
+Governance Core is a governance-oriented security platform, not a generic CRUD application.
 
-The UI must communicate:
+The UI should communicate:
 
-- Authority
-- Structural clarity
-- Traceability
-- Role boundaries
-- Immediate security posture visibility
+- structural clarity
+- trust
+- role boundaries
+- current governance state
+- system seriousness without visual noise
 
-Primary objective (from operational blueprint):
+Primary objective:
 
-> A user logs in and immediately understands the organization's security posture. :contentReference[oaicite:2]{index=2}
+> A user should be able to log in and quickly understand both the security posture of the platform and what actions their role allows them to perform.
 
-The interface must feel:
+The interface should feel:
 
-- Enterprise-grade
-- Calm
-- Structured
-- Analytical
-- Trustworthy
-
----
-
-## 2. Core Workflow Alignment
-
-The UI strictly mirrors the governance lifecycle:
-
-Asset → Risk → Control → Evidence → Dashboard :contentReference[oaicite:3]{index=3}
-
-This traceability chain also aligns directly with ISO 27001 expectations:
-
-Asset → Risk → Control → Implementation → Evidence :contentReference[oaicite:4]{index=4}
-
-Navigation order reflects this lifecycle.
+- calm
+- deliberate
+- readable
+- operational
+- role-aware
 
 ---
 
-## 3. Global Layout Structure
+## 2. Current Frontend Architecture
 
-### Layout Composition
+The frontend currently follows this sequence:
 
-- Fixed Sidebar (left)
-- Top Navigation Bar (persistent)
-- Main Workspace Area
+1. user reaches the React application
+2. `AuthGate` checks whether the user is authenticated through OIDC
+3. if not authenticated, the user is redirected to Keycloak
+4. after successful login, the frontend stores the authenticated OIDC session
+5. Axios attaches the access token to backend API calls
+6. the frontend calls `/api/v1/auth/me`
+7. `CurrentUserContext` stores the trusted current user profile
+8. pages render according to the backend-confirmed user role
 
-### Sidebar
+### Plain English explanation
 
-Navigation order:
+The frontend does not decide who the user is by itself.
 
-- Dashboard
-- Assets
-- Risks
-- Controls
-- Evidence
-- Audit Logs
-- Users (Admin only)
+It relies on:
+- Keycloak for authentication
+- the backend for trusted current-user identity and roles
 
-Sidebar is:
-
-- Minimal
-- Icon + label
-- Active route highlighted
-- No animation clutter
+That keeps the UI aligned with real backend security instead of guessing from raw token data everywhere.
 
 ---
 
-## 4. Persistent Security Posture Score
+## 3. Global Application Structure
 
-A numeric Security Posture Score (0–100) is displayed in the Top Bar.
+### Current Composition
 
-Purpose:
-- Provide instant health visibility
-- Allow quick assessment without navigating to dashboard
-- Reinforce governance maturity
+The app shell currently contains:
 
-The score may be derived from:
+- top navigation area
+- main routed content area
+- footer/signature area
 
-- Controls implemented %
-- High/critical risk count
-- Expiring evidence
-- Open vulnerabilities (future phase)
+Security and identity are layered around it through:
 
-The exact formula can evolve, but the UI placement remains constant.
+- `AuthProvider` from the OIDC client library
+- `AuthGate`
+- `CurrentUserProvider`
+
+### Why this structure was chosen
+
+The goal is to keep authentication and user-state concerns near the app shell so that feature pages do not each reinvent login, token handling, or current-user loading.
 
 ---
 
-## 5. Role-Aware UI Enforcement (IAM)
+## 4. Authentication and Session Flow in the UI
 
-RBAC must be enforced visually — not only at route level.
+### OIDC Login
 
-Roles:
+The frontend uses OIDC against Keycloak.
 
-- Admin
-- Analyst
-- Auditor
+The frontend is responsible for:
+- starting the login flow
+- handling redirect return after login
+- maintaining authenticated session state
+- triggering sign-out
+
+The frontend is **not** responsible for:
+- validating JWT signatures
+- deciding which roles are trusted
+- enforcing security boundaries on the API
+
+That remains backend responsibility.
+
+### Auth Gate
+
+`AuthGate` protects the application shell.
 
 Behavior:
+- if the user is not authenticated, redirect to Keycloak
+- if the user is authenticated, render the app
 
-Admin:
-- Full access
-- User management visible
-- All action buttons enabled
-
-Analyst:
-- Create/update/delete domain records
-- Cannot manage users
-
-Auditor:
-- Read-only access
-- No create/update/delete buttons rendered
-- Status selectors disabled
-
-Buttons and actions are conditionally rendered.
-
-This reflects:
-
-- Least Privilege
-- Separation of Duties
-- Access Control enforcement :contentReference[oaicite:5]{index=5}
+This keeps protected pages from acting like public pages.
 
 ---
 
-## 6. Design System
+## 5. Current User State
+
+### Trusted Current User Source
+
+The frontend uses:
+
+`GET /api/v1/auth/me`
+
+This endpoint returns:
+- username
+- email
+- roles
+
+### Why `/auth/me` matters
+
+The frontend already has an OIDC session, but it still needs a trusted application-level user model.
+
+That is why the frontend does not rely only on raw token claims scattered across the UI.
+
+Instead, it loads one backend-confirmed user profile and stores it in a shared React context.
+
+### Current User Context
+
+`CurrentUserContext` centralizes:
+- `currentUser`
+- `loading`
+- `error`
+- refresh capability
+
+This means feature pages can consume current-user state without repeating API calls or auth logic.
+
+### Plain English explanation
+
+The frontend now knows not only that a user logged in, but also which user the backend recognizes and which roles the backend trusts.
+
+---
+
+## 6. Token Propagation and API Access
+
+The frontend uses a shared Axios client.
+
+That client automatically:
+- reads the current OIDC access token
+- attaches it to outgoing backend requests as:
+  - `Authorization: Bearer <token>`
+
+### Why this matters
+
+A user being "logged in" in the frontend is not enough.
+
+The backend only recognizes the user when the token is actually attached to the request.
+
+This is why token propagation is a core part of the UI architecture, not a minor implementation detail.
+
+---
+
+## 7. Role-Aware Rendering Model
+
+### Current Principle
+
+The frontend reflects permission rules already enforced by the backend.
+
+This means:
+- backend enforcement is the source of truth
+- frontend role checks exist to improve clarity and usability
+- hidden buttons are not security controls by themselves
+
+### Current Example
+
+On the Assets page:
+- `ADMIN` and `ANALYST` can see the asset creation form
+- `AUDITOR` receives a read-only experience instead
+
+This keeps the UI consistent with backend RBAC.
+
+### Why this matters
+
+If the backend blocks an action but the UI still invites the user to perform it, the product feels poorly governed.
+
+A role-aware UI reduces confusion and better communicates access boundaries.
+
+---
+
+## 8. Present Layout and Feature Surface
+
+### Assets Page
+
+The current secured feature slice is the Assets page.
+
+Its responsibilities include:
+- viewing assets
+- creating assets for write-capable roles
+- showing a read-only state for auditors
+
+This page is currently the main place where frontend authorization reflection is visible.
+
+### Future Pages
+
+As more subdomains are added, the same model should continue:
+- backend protects the operation
+- frontend reflects the role state
+- current-user data comes from shared context
+- repeated role logic should eventually move into shared authorization helpers
+
+---
+
+## 9. Design System Direction
 
 ### Visual Tone
 
-- Dark mode default
-- High readability
-- Structured spacing
-- No decorative gradients
+The frontend currently uses a dark interface with strong contrast and neon-accent styling.
 
-Subtle depth is allowed via:
-- Light elevation
-- Very subtle noise texture on cards
-- Slight background contrast variations
+The design direction should still preserve:
+- readability
+- consistent spacing
+- clear hierarchy
+- deliberate emphasis rather than decorative overload
 
-No aggressive effects.
+### Interaction Principle
 
-### Color Usage
+Animations and effects may exist, but they should not interfere with the operational clarity of the product.
 
-Background: dark slate  
-Cards: slightly lighter slate  
-Primary accent: blue  
-Success: green  
-Warning: amber  
-Critical: red  
-Neutral: gray  
-
-Red is reserved for CRITICAL states only.
+Security and governance products should still feel stable and understandable first.
 
 ---
 
-## 7. Assets Page (Foundation Layer)
+## 10. Frontend Security Principles
 
-Purpose:
-Establish asset inventory baseline.
+The frontend is designed around these rules:
 
-ISO 27001 Clause 8.1 alignment :contentReference[oaicite:6]{index=6}
-
-### Layout
-
-Header:
-- "Assets"
-- "+ Add Asset" (hidden for Auditor)
-
-Filters:
-- Search
-- Classification filter
-
-Table Columns:
-- Name
-- Owner
-- Classification
-- Linked Risk Count
-- Actions
-
-### Add Asset Modal
-
-Fields:
-- Name
-- Type
-- Owner
-- Data Classification
-- Description
-
-Empty State Copy:
-
-"Assets form the foundation of your governance engine.  
-Create your first asset to begin structured risk modeling."
+- do not treat frontend hiding as real security
+- trust backend-confirmed user state over ad hoc token parsing in feature pages
+- keep auth/session logic centralized
+- keep token attachment centralized in the HTTP client
+- keep role-aware UI aligned with backend RBAC
 
 ---
 
-## 8. Risk Page (Semi-Quantitative Modeling)
+## 11. Immediate Next Frontend Evolution
 
-Implements semi-quantitative model:
+The next frontend architecture improvements should be:
 
-Risk Score = Likelihood × Impact :contentReference[oaicite:7]{index=7}
-
-Severity Mapping:
-
-1–5: LOW  
-6–10: MEDIUM  
-11–15: HIGH  
-16–25: CRITICAL  
-
-### Layout
-
-Header:
-- "Risks"
-- "+ Create Risk" (hidden for Auditor)
-
-Table:
-- Risk Title
-- Linked Asset
-- Likelihood
-- Impact
-- Score
-- Severity Badge
-- Treatment
-
-Create/Edit:
-- Sliders for Likelihood & Impact
-- Live score calculation
-- Real-time severity display
+1. shared authorization helpers
+   - `hasRole(...)`
+   - `canManageAssets(...)`
+   - `isReadOnlyUser(...)`
+2. broader role-aware rendering across future pages
+3. audit and lifecycle UI built on top of real backend workflows
+4. eventually stronger comparison or migration toward a BFF + `httpOnly` cookie model if the project reaches that hardening phase
 
 ---
 
-## 9. Controls Page (Statement of Applicability)
+## 12. Architectural Symmetry
 
-Purpose:
-Model ISO Annex A control applicability :contentReference[oaicite:8]{index=8}
+The frontend should continue mirroring backend concerns cleanly.
 
-### Responsive Pattern
+Current symmetry:
+- Keycloak / OIDC -> frontend authentication flow
+- Spring Security / JWT validation -> trusted backend identity
+- `/auth/me` -> frontend current-user model
+- backend RBAC -> frontend role-aware rendering
+- governance workflows -> future page and dashboard structure
 
-Desktop:
-- Split view (catalog left, details right)
-
-Tablet/Mobile:
-- Control detail opens in right-side drawer
-- Prevents cramped layout
-
-### Control Detail Panel
-
-- Control name & description
-- Status selector:
-  - Implemented
-  - Planned
-  - Not Applicable
-- Justification field
-- Linked assets
-- Linked risks
-- Linked evidence
+This symmetry keeps the system understandable across layers.
 
 ---
 
-## 10. Evidence Page (Continuous Compliance)
+## 13. Final Objective
 
-Purpose:
-Maintain audit-ready proof.
+When a user opens Governance Core, the UI should help them understand:
 
-ISO Clause 7.5 alignment :contentReference[oaicite:9]{index=9}
+- who they are in the system
+- what their role allows
+- what assets and governance records exist
+- what actions are available or unavailable to them
+- how the system communicates security posture and accountability
 
-Layout:
-- Card or table format
-
-Fields:
-- Evidence name
-- Linked control
-- Linked asset/risk
-- Expiry date
-- Status badge
-
-Expiry Logic:
-- <30 days: Warning
-- Expired: Critical
-
-Emphasizes continuous compliance lifecycle.
-
----
-
-## 11. Dashboard (Security Posture View)
-
-The Dashboard is the visual summary of governance maturity.
-
-### Hero Section — Risk Matrix
-
-5x5 interactive matrix:
-
-Impact (vertical)  
-Likelihood (horizontal)
-
-Cells:
-- Colored by severity
-- Clickable to reveal underlying risks
-
-The matrix is the most actionable governance visualization and must be visually dominant.
-
----
-
-### Secondary Section — KPI Cards
-
-- Total Assets
-- Open Risks
-- High/Critical Risks
-- Controls Implemented %
-- Expiring Evidence
-
----
-
-### Compliance Snapshot
-
-- Implemented %
-- Planned %
-- Not Applicable %
-- Evidence expiring soon
-
-Provides ISO/NIST posture alignment :contentReference[oaicite:10]{index=10}
-
----
-
-## 12. Users Page (Admin Only)
-
-Purpose:
-Role management and governance authority.
-
-Columns:
-- Name
-- Email
-- Role
-- Actions
-
-Role dropdown:
-- Admin
-- Analyst
-- Auditor
-
-Reinforces separation of duties.
-
----
-
-## 13. UX Principles
-
-- No unnecessary page reloads
-- Drawer pattern for details
-- Clear loading states
-- Clear error states
-- Clear empty states
-- Minimal animation
-- Structured transitions
-
-The UI must feel calm and defensible — not flashy.
-
----
-
-## 14. Architectural Symmetry
-
-Frontend mirrors backend subdomains:
-
-- AssetSubdomain → Assets UI
-- RiskSubdomain → Risks UI
-- ControlSubdomain → Controls UI
-- EvidenceSubdomain → Evidence UI
-- IAMSubdomain → Role-aware UI enforcement
-
-This preserves domain integrity across layers.
-
----
-
-## 15. Final Objective
-
-When any role accesses the platform, they must immediately understand:
-
-- What assets exist
-- What risks are active
-- What controls are implemented
-- What evidence is expiring
-- What the overall posture score indicates
-
-The UI exists to make governance visible, structured, and auditable.
+The UI exists to make governance visible, structured, and role-aware without pretending to be the true security boundary.
