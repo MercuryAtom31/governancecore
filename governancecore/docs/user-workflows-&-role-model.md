@@ -1,11 +1,11 @@
-# Governance Core — User Workflows & Role Model
+# Governance Core - User Workflows & Role Model
 
 This document defines:
 
-- What the primary user does in the MVP
-- The role model (Admin / Analyst / Auditor)
-- How IAM, GRC, and AppSec concepts are enforced
-- What security posture visibility means in practice
+- the role model (`ADMIN`, `ANALYST`, `AUDITOR`)
+- the main governance workflows of the platform
+- the access lifecycle workflows that make the system look like real IAM
+- how identity, authorization, governance, and auditability connect together
 
 This is the operational blueprint of the platform.
 
@@ -15,35 +15,53 @@ This is the operational blueprint of the platform.
 
 ## Core Goal
 
-> A user logs in and immediately understands the organization's security posture.
+> A user logs in and immediately understands the organization's security posture, while the system clearly governs who can do what, how access changes, and how those changes are recorded.
 
 Security posture is derived from structured workflows:
 
-Asset → Risk → Control → Evidence → Dashboard
+Asset -> Risk -> Control -> Evidence -> Dashboard
+
+Access governance is layered on top of those workflows:
+
+Identity -> Role -> Access Decision -> Audit Event
 
 The platform centralizes these elements into a traceable governance engine.
 
 ---
 
-# 2. Authentication & Identity (IAM Layer)
+# 2. Authentication & Identity Boundary
 
-## Login Flow
+## Authentication Model
 
-Users authenticate using OAuth2 (Google / GitHub / Corporate IdP).
+Users authenticate through Keycloak using OIDC.
 
 The platform:
-- Does NOT store passwords
-- Delegates authentication to a trusted identity provider
-- Issues a session (JWT-based)
-- Resolves the user’s assigned role
+- does NOT store passwords
+- delegates authentication to a trusted identity provider
+- validates JWTs in the backend
+- resolves the user's role and permissions after authentication
+
+## Identity Boundary
+
+Keycloak is responsible for:
+- authentication
+- token issuance
+- identity-provider behavior
+
+Governance Core is responsible for:
+- application authorization
+- access lifecycle changes
+- access governance workflows
+- audit logging of important actions
 
 ## Identity Concepts Practiced
 
 - OAuth2 / OIDC
-- Token validation
-- Role-based access control (RBAC)
-- Privileged role enforcement
-- Audit logging of identity events
+- token validation
+- role-based access control (RBAC)
+- privileged role enforcement
+- audit logging of identity and governance events
+- access lifecycle thinking (Joiner / Mover / Leaver)
 
 ---
 
@@ -53,137 +71,256 @@ The platform implements strict RBAC with three core roles.
 
 ---
 
-## 👑 Admin
+## Admin
 
 **Purpose:** Platform oversight and governance authority.
 
-### Capabilities:
-- Manage users
-- Assign / change roles
-- View all records
-- Override risk or control statuses (if required)
-- View full audit logs
-- Access dashboard
+### Capabilities
+- assign roles
+- change roles
+- revoke access
+- disable user access in the application lifecycle model
+- view all records
+- view full audit logs
+- access dashboard
 
-### Restrictions:
-- Does not typically perform daily risk analysis
-- Not required to upload evidence
+### Restrictions
+- does not typically perform daily risk analysis
+- not required to upload evidence during normal operations
 
 Admin represents executive or security leadership.
 
 ---
 
-## 🧠 Analyst (Primary Active Role)
+## Analyst (Primary Active Role)
 
 **Purpose:** Operational security governance.
 
 This is the primary actor in the MVP.
 
-### Capabilities:
-- Create / update / delete assets
-- Create and score risks
-- Assign risk treatments
-- Map controls to assets or risks
-- Update control implementation status
-- Upload evidence metadata
-- View dashboard
-- Participate in access reviews
+### Capabilities
+- create / update / delete assets
+- create and score risks
+- assign risk treatments
+- map controls to assets or risks
+- update control implementation status
+- upload evidence metadata
+- view dashboard
+- participate in access reviews when required
 
-### Restrictions:
-- Cannot manage user roles
-- Cannot modify system configuration
+### Restrictions
+- cannot assign system roles
+- cannot change application-level administrative configuration
+- cannot approve their own privileged access changes
 
 The Analyst drives the governance workflow.
 
 ---
 
-## 👀 Auditor
+## Auditor
 
 **Purpose:** Independent verification.
 
-### Capabilities:
-- Read-only access to:
-  - Assets
-  - Risks
-  - Controls
-  - Evidence
-  - Dashboard
-  - Audit logs
+### Capabilities
+- read-only access to:
+  - assets
+  - risks
+  - controls
+  - evidence
+  - dashboard
+  - audit logs
+  - access history views
 
-### Restrictions:
-- Cannot create, update, or delete records
-- Cannot modify risk scores
-- Cannot change control implementation status
-- Cannot assign roles
+### Restrictions
+- cannot create, update, or delete records
+- cannot modify risk scores
+- cannot change control implementation status
+- cannot assign roles
+- cannot approve access changes
 
 Auditor ensures compliance without altering system state.
 
 ---
 
-# 4. Core MVP Workflows
+# 4. Access Lifecycle Workflows (IAM Core)
+
+These workflows are what make Governance Core feel like an IAM-aware system instead of only a secured CRUD application.
 
 ---
 
-## 🧱 Step 1 – Login
+## Workflow A - Assign Role (Joiner)
 
-User logs in via OAuth2.
+### Trigger
+A new user needs initial access to the platform.
+
+### Actor
+Admin
+
+### Flow
+1. admin selects an existing authenticated identity
+2. admin assigns a role such as `ANALYST`
+3. system records the access decision
+4. user logs in
+5. backend enforces access based on the assigned role
+
+### IAM Meaning
+This represents the **Joiner** part of JML.
+
+### Audit Expectation
+The system records:
+- actor
+- action (`ASSIGN_ROLE`)
+- target user
+- old value
+- new value
+- timestamp
+- outcome
+
+---
+
+## Workflow B - Change Role (Mover)
+
+### Trigger
+A user's job function changes.
+
+### Actor
+Admin
+
+### Flow
+1. admin reviews current access
+2. admin changes role from one state to another
+   - example: `ANALYST` -> `AUDITOR`
+3. system records the change
+4. new access applies on subsequent authenticated requests
+
+### IAM Meaning
+This represents the **Mover** part of JML.
+
+### Audit Expectation
+The system records:
+- actor
+- action (`CHANGE_ROLE`)
+- target user
+- previous role
+- new role
+- timestamp
+- outcome
+
+---
+
+## Workflow C - Revoke Role / Disable Access (Leaver)
+
+### Trigger
+A user leaves the organization or should no longer access the platform.
+
+### Actor
+Admin
+
+### Flow
+1. admin revokes the role or disables access
+2. system records the event
+3. user can no longer perform authorized actions
+4. privileged access is removed as part of the lifecycle model
+
+### IAM Meaning
+This represents the **Leaver** part of JML.
+
+### Audit Expectation
+The system records:
+- actor
+- action (`REVOKE_ACCESS` or `DISABLE_USER`)
+- target user
+- previous access state
+- new access state
+- timestamp
+- outcome
+
+---
+
+## Workflow D - Review Current Access
+
+### Trigger
+An admin or auditor needs to confirm who currently has what level of access.
+
+### Actor
+Admin or Auditor
+
+### Flow
+1. system displays current role assignments
+2. admin or auditor reviews whether access is appropriate
+3. any required change is performed through a controlled lifecycle workflow
+
+### IAM Meaning
+This starts moving the project toward **access review** and governance thinking.
+
+---
+
+# 5. Core Governance Workflows
+
+These workflows remain the core GRC side of the platform.
+
+---
+
+## Step 1 - Login
+
+User logs in via OIDC.
 
 System:
-- Authenticates user
-- Determines role
-- Enforces access policies via `@PreAuthorize`
+- authenticates user through Keycloak
+- determines role from the trusted backend-authenticated context
+- enforces access policies via Spring Security and RBAC rules
 
 IAM concepts:
-- Identity enforcement
-- Authorization boundaries
-- Least privilege
+- identity enforcement
+- authorization boundaries
+- least privilege
 
 ---
 
-## 🧱 Step 2 – Register Assets
+## Step 2 - Register Assets
 
-### User Action (Analyst):
+### User Action (Analyst)
 Creates asset with:
-- Name
-- Type
-- Owner
-- Data classification (PUBLIC / INTERNAL / CONFIDENTIAL / RESTRICTED)
-- Description
+- name
+- type
+- owner
+- data classification (`PUBLIC`, `INTERNAL`, `CONFIDENTIAL`, `RESTRICTED`)
+- description
 
-### Governance Outcome:
-- Asset inventory established
-- Ownership defined
-- Data sensitivity modeled
+### Governance Outcome
+- asset inventory established
+- ownership defined
+- data sensitivity modeled
 
 This forms the governance baseline.
 
 ---
 
-## 🧱 Step 3 – Risk Management
+## Step 3 - Risk Management
 
-### User Action:
-- Create risk
-- Link to asset
-- Set likelihood
-- Set impact
-- System auto-calculates score (likelihood × impact)
-- Assign treatment (Accept / Mitigate / Transfer / Avoid)
+### User Action
+- create risk
+- link to asset
+- set likelihood
+- set impact
+- system auto-calculates score (`likelihood x impact`)
+- assign treatment (`Accept / Mitigate / Transfer / Avoid`)
 
-### Governance Outcome:
-- Structured risk register
-- Quantified risk scoring
-- Traceable decision-making
+### Governance Outcome
+- structured risk register
+- quantified risk scoring
+- traceable decision-making
 
 Business logic demonstrated:
-- Derived fields
-- Domain validation
-- Risk exposure tracking
+- derived fields
+- domain validation
+- risk exposure tracking
 
 ---
 
-### 🔎 Risk Assessment Methodology
+## Risk Assessment Methodology
 
-Governance Core implements a **Semi-Quantitative Risk Assessment approach** aligned with ISO 27001 practices.
+Governance Core implements a **semi-quantitative risk assessment** approach aligned with ISO 27001 practices.
 
 ### Why Semi-Quantitative?
 
@@ -193,43 +330,39 @@ There are three common approaches to measuring risk:
 |-----------|-------------|----------------------|
 | Quantitative | Uses financial data and probabilities to calculate expected monetary loss | Requires reliable financial and statistical data that most organizations do not realistically possess |
 | Qualitative | Uses descriptive categories (Low / Medium / High) without numeric structure | Too subjective and lacks prioritization granularity |
-| **Semi-Quantitative** | Uses numeric scales to represent categories (e.g., 1–5) and calculates a derived score | Balanced, practical, and widely used in ISO 27001 implementations |
+| **Semi-Quantitative** | Uses numeric scales to represent categories (e.g., 1-5) and calculates a derived score | Balanced, practical, and widely used in ISO 27001 implementations |
 
 The MVP uses:
 
-Risk Score = Likelihood × Impact
+`Risk Score = Likelihood x Impact`
 
 Where:
-
-- Likelihood: integer (1–5)
-- Impact: integer (1–5)
-- Risk Score: derived integer (1–25)
+- likelihood: integer (`1-5`)
+- impact: integer (`1-5`)
+- risk score: derived integer (`1-25`)
 
 ### Risk Level Mapping
 
-Risk scores are mapped to severity levels:
-
 | Score Range | Risk Level |
 |--------------|------------|
-| 1–5 | LOW |
-| 6–10 | MEDIUM |
-| 11–15 | HIGH |
-| 16–25 | CRITICAL |
+| 1-5 | LOW |
+| 6-10 | MEDIUM |
+| 11-15 | HIGH |
+| 16-25 | CRITICAL |
 
 This allows:
-
-- Risk prioritization
-- Executive-friendly reporting
-- Structured decision-making
-- Audit traceability
+- risk prioritization
+- executive-friendly reporting
+- structured decision-making
+- audit traceability
 
 ### Governance Rationale
 
 Semi-quantitative assessment is commonly used in ISO 27001 risk matrices because:
 
-- Precise financial loss estimates are often unreliable
-- Overly precise numbers can create a false sense of certainty
-- Organizations need structured prioritization rather than actuarial modeling
+- precise financial loss estimates are often unreliable
+- overly precise numbers can create a false sense of certainty
+- organizations need structured prioritization rather than actuarial modeling
 
 This approach provides sufficient rigor for governance while remaining practical.
 
@@ -237,161 +370,175 @@ This approach provides sufficient rigor for governance while remaining practical
 
 The architecture can later support:
 
-- Dynamic scoring adjustments based on asset classification
-- Quantitative financial modeling (e.g., Annual Loss Expectancy)
-- Custom risk calculation formulas per organization
+- dynamic scoring adjustments based on asset classification
+- quantitative financial modeling (e.g., Annual Loss Expectancy)
+- custom risk calculation formulas per organization
 
 For MVP scope, semi-quantitative provides the optimal balance between realism and implementation complexity.
+
 ---
 
-## 🧱 Step 4 – Control Mapping (Statement of Applicability)
+## Step 4 - Control Mapping (Statement of Applicability)
 
-### User Action:
-- View control catalog (ISO 27001 Annex A seeded list)
-- Mark control status:
-  - Implemented
-  - Planned
-  - Not Applicable
-- Provide justification
+### User Action
+- view control catalog (ISO 27001 Annex A seeded list)
+- mark control status:
+  - implemented
+  - planned
+  - not applicable
+- provide justification
 
-### Governance Outcome:
-- Control applicability modeled
+### Governance Outcome
+- control applicability modeled
 - SoA logic captured
-- Compliance traceability established
+- compliance traceability established
 
 ---
 
-## 🧱 Step 5 – Evidence Attachment
+## Step 5 - Evidence Attachment
 
-### User Action:
-- Upload evidence metadata
-- Link evidence to:
-  - Control
-  - Risk
-  - Asset
-- Set expiry date
+### User Action
+- upload evidence metadata
+- link evidence to:
+  - control
+  - risk
+  - asset
+- set expiry date
 
-### Governance Outcome:
-- Audit-ready traceability
-- Control effectiveness proof
-- Continuous compliance logic (expiry forces renewal)
+### Governance Outcome
+- audit-ready traceability
+- control effectiveness proof
+- continuous compliance logic (expiry forces renewal)
 
 ---
 
-## 🧱 Step 6 – Security Posture Dashboard
+## Step 6 - Security Posture Dashboard
 
 The dashboard aggregates system state.
 
-### Displays:
+### Displays
+- total assets
+- open risks
+- high-risk count
+- controls implemented percentage
+- controls not applicable percentage
+- expiring evidence
+- access reviews due
+- vulnerabilities (future AppSec module)
 
-- Total assets
-- Open risks
-- High-risk count
-- Controls implemented %
-- Controls not applicable %
-- Expiring evidence
-- Access reviews due
-- Vulnerabilities (future AppSec module)
-
-### Outcome:
+### Outcome
 
 The user sees:
-- Risk exposure
-- Control coverage
-- Compliance readiness
-- Governance maturity
+- risk exposure
+- control coverage
+- compliance readiness
+- governance maturity
 
-This fulfills the platform’s core objective.
+This fulfills the platform's core objective.
 
 ---
 
-# 5. Access Control Enforcement Model
+# 6. Access Control Enforcement Model
 
 Authorization rules:
 
 | Action | Admin | Analyst | Auditor |
 |--------|--------|----------|----------|
-| Manage Users | ✅ | ❌ | ❌ |
-| Create Assets | ✅ | ✅ | ❌ |
-| Create Risks | ✅ | ✅ | ❌ |
-| Modify Controls | ✅ | ✅ | ❌ |
-| Upload Evidence | ✅ | ✅ | ❌ |
-| View Dashboard | ✅ | ✅ | ✅ |
-| View Audit Logs | ✅ | Read-only | Read-only |
+| Assign Role | Yes | No | No |
+| Change Role | Yes | No | No |
+| Revoke / Disable Access | Yes | No | No |
+| View Current Access State | Yes | Yes | Yes |
+| Create Assets | Yes | Yes | No |
+| Create Risks | Yes | Yes | No |
+| Modify Controls | Yes | Yes | No |
+| Upload Evidence | Yes | Yes | No |
+| View Dashboard | Yes | Yes | Yes |
+| View Audit Logs | Yes | Read-only | Read-only |
 
 Enforcement implemented using:
 
 - Spring Security
-- `@PreAuthorize`
+- backend RBAC rules
 - JWT-based authentication
-- Audit logging
+- frontend role-aware rendering
+- audit logging
 
 ---
 
-# 6. Security Design Principles Demonstrated
+# 7. Security and Governance Principles Demonstrated
 
-The MVP reflects:
+The platform is designed to reflect:
 
-- Least Privilege
-- Separation of Duties
-- Accountability
-- Traceability
-- Continuous Improvement
-- Identity-first architecture
+- least privilege
+- separation of duties
+- accountability
+- traceability
+- auditability
+- continuous improvement
+- identity-first architecture
+- lifecycle-aware access governance
 
 ---
 
-# 7. Architectural Scope (Intentional Constraints)
+# 8. Architectural Scope (Intentional Constraints)
 
-The MVP intentionally excludes:
+The current phase intentionally excludes:
 
-- Multi-tenancy
-- Advanced workflow engines
-- Vendor management
-- Incident response automation
+- multi-tenancy
+- advanced workflow engines
+- full external provisioning connectors
+- vendor management
+- incident response automation
 - AI governance logic
-- External SIEM integrations
+- external SIEM integrations
 
 These may be added in future phases.
 
 ---
 
-# 8. Learning Outcomes
+# 9. Learning Outcomes
 
 By implementing this system, the developer practices:
 
 IAM:
 - OAuth2
-- JWT
+- OIDC
+- JWT validation
 - RBAC
-- Privileged access
-- Authorization enforcement
+- access lifecycle modeling
+- privileged access boundaries
+- authorization enforcement
+- access review thinking
 
 GRC:
-- Risk modeling
-- Control traceability
-- Evidence lifecycle
-- Compliance alignment
+- risk modeling
+- control traceability
+- evidence lifecycle
+- compliance alignment
+- auditability
 
 AppSec (future phase):
-- Vulnerability tracking
-- Remediation workflow
-- Risk-to-control mapping
+- vulnerability tracking
+- remediation workflow
+- risk-to-control mapping
 
 ---
 
-# 9. Final Summary
+# 10. Final Summary
 
 Governance Core MVP is:
 
-A single-tenant, multi-role, identity-enforced security governance engine.
+A single-tenant, multi-role, identity-enforced security governance engine with explicit access-governance direction.
 
 It enables:
 
-- Structured asset inventory
-- Risk quantification
-- Control traceability
-- Evidence lifecycle management
-- Security posture visibility
+- structured asset inventory
+- risk quantification
+- control traceability
+- evidence lifecycle management
+- security posture visibility
+- role-aware access governance
+- lifecycle-oriented access changes
+- auditable security workflows
 
 All protected through robust IAM enforcement.
