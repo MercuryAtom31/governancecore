@@ -1,37 +1,88 @@
-# Governance Core - ISMS / GRC Platform
+# Governance Core
 
-Governance Core is an Information Security Management System (ISMS) / Governance, Risk, and Compliance (GRC) platform built with Spring Boot and React. It centralizes security governance in one system instead of spreading assets, risks, controls, and evidence across spreadsheets and documents.
+Governance Core is a governance-oriented platform for managing security and compliance data with IAM-aware access control.
 
-## Product Vision
+It is being built as a practical system that brings together:
 
-Organizations working toward compliance frameworks such as ISO 27001 and SOC 2 need traceability between what they protect, the risks they track, the controls they implement, and the evidence they present.
+- governed assets
+- security and compliance workflows
+- role-based access control
+- identity-aware frontend and backend behavior
+- future access lifecycle and audit capabilities
 
-Governance Core is being built to provide that traceability in one platform:
+It does **not** try to replace an Identity Provider. Instead, it uses **Keycloak** for authentication and focuses its own domain on governance, authorization, lifecycle changes, and auditability.
+
+## What Problem It Solves
+
+Many organizations still manage governance and compliance work across disconnected spreadsheets, documents, and ticketing workflows.
+
+That creates problems such as:
+
+- weak traceability between systems, risks, controls, and evidence
+- unclear ownership and accountability
+- inconsistent access control
+- poor visibility into who can do what
+- limited auditability of security and governance changes
+
+Governance Core is being built to centralize that work into one coherent system.
+
+## Core Idea
+
+The project is designed around the following governance chain:
 
 ```text
 Asset -> Risk -> Control -> Evidence
 ```
 
-## Who This Is For
+That chain will eventually sit alongside access governance concerns such as:
 
-| Role | How they use it |
-|---|---|
-| Security / GRC Teams | Manage governance records, map controls, track compliance status |
-| Engineering Managers | Own systems and assets, track remediation and accountability |
-| Auditors / Compliance | Review evidence, verify controls, inspect read-only records |
+- who has access
+- why they have access
+- when that access changes
+- how those changes are recorded and reviewed
+
+## System Scope
+
+Governance Core currently consists of:
+
+- a **Spring Boot backend**
+- a **React frontend**
+- **Keycloak** as the external Identity Provider (IdP)
+
+### Responsibility Split
+
+**Keycloak** is responsible for:
+- authenticating the user
+- issuing tokens
+- holding realm users and roles
+
+**Governance Core** is responsible for:
+- enforcing role-based access in the application
+- exposing trusted current-user data to the frontend
+- reflecting permissions in the UI
+- evolving toward access lifecycle and audit workflows
+
+This boundary is intentional. Governance Core is an IAM-aware governance application, not a replacement for the IdP.
 
 ## Current Status
 
-**Current vertical slice: AssetSubdomain + Security Foundation**
+The project currently includes a working vertical slice across:
 
-Implemented backend capabilities:
+- asset management
+- backend security
+- frontend authentication
+- role-aware UI behavior
+
+### Backend capabilities implemented
+
 - Create an asset
 - List all assets
 - Get asset by ID
 - Update an asset
 - Delete an asset
 
-Implemented security capabilities:
+### Security capabilities implemented
+
 - Spring Security configured as an OAuth2 Resource Server
 - JWT validation through Keycloak issuer metadata
 - Role extraction from `realm_access.roles`
@@ -39,17 +90,42 @@ Implemented security capabilities:
 - `/api/v1/auth/me` endpoint returning authenticated user info
 - Role-based backend rules on asset endpoints
 
-Implemented frontend capabilities:
+### Frontend capabilities implemented
+
 - React + TypeScript asset list/create flow
 - OIDC login redirect with Keycloak
 - Auth provider and auth gate in the frontend
-- Frontend sign-out flow
+- Access token propagation through a shared Axios client
+- Backend-confirmed current-user state in the frontend
+- Role-aware rendering on the asset page
 
-## Architecture
+## How The Pieces Fit Together
+
+### Authentication and Authorization Flow
+
+The current end-to-end IAM flow works like this:
+
+1. the user opens the React frontend
+2. the frontend checks whether an authenticated OIDC session exists
+3. if not, the user is redirected to Keycloak
+4. the user authenticates through the `governance-core` realm
+5. Keycloak redirects the user back to the frontend
+6. the frontend sends the access token to the backend API
+7. Spring Security validates the JWT
+8. the backend extracts roles and enforces RBAC
+9. the frontend calls `/api/v1/auth/me` to get trusted user identity and roles
+10. the UI reflects what the user is allowed to do
+
+In plain English:
+- Keycloak confirms who the user is
+- Spring Security decides what the user can do
+- the frontend reflects those permissions in the user experience
+
+## Architecture Summary
 
 ### Backend
 
-The backend is organized by subdomain, with n-tier layering inside each subdomain:
+The backend is organized by subdomain, with layered responsibilities inside each subdomain.
 
 ```text
 assetsubdomain/
@@ -75,7 +151,7 @@ utils/
 
 ### Frontend
 
-The frontend follows a feature-based structure with separation of concerns:
+The frontend follows a feature-based structure with separate areas for auth, API access, and feature-level UI.
 
 ```text
 src/
@@ -89,12 +165,36 @@ src/
   auth/
     oidcConfig.ts       -> OIDC client configuration
     AuthGate.tsx        -> redirects unauthenticated users to login
+    CurrentUserContext.tsx
   lib/
     axios.ts            -> shared HTTP client
   ui/                   -> reusable UI primitives
 ```
 
-## Tech Stack
+## Roles
+
+The application currently recognizes three business roles:
+
+- `ADMIN` - full platform access
+- `ANALYST` - can create, update, and manage governance records
+- `AUDITOR` - read-only access for verification and review
+
+### Current backend RBAC rules
+
+- `GET /api/v1/assets/**` -> `ADMIN`, `ANALYST`, `AUDITOR`
+- `POST /api/v1/assets/**` -> `ADMIN`, `ANALYST`
+- `PUT /api/v1/assets/**` -> `ADMIN`, `ANALYST`
+- `DELETE /api/v1/assets/**` -> `ADMIN`, `ANALYST`
+- `GET /api/v1/auth/me` -> any authenticated user
+
+### Current frontend RBAC reflection
+
+- `ADMIN` and `ANALYST` can see asset creation UI
+- `AUDITOR` gets a read-only experience on the asset page
+
+The backend remains the security boundary. The frontend reflects permissions for clarity and usability.
+
+## Technology Stack
 
 ### Backend
 
@@ -133,31 +233,6 @@ src/
 | MockMvc | Controller/web tests |
 | H2 | In-memory test database |
 
-## Security Design
-
-Governance Core uses **Keycloak** as the local Identity Provider (IdP).
-
-### What that means
-
-- Keycloak confirms **who the user is**
-- Spring Security decides **what the user is allowed to do**
-- The backend trusts JWTs issued by the `governance-core` realm
-- The frontend uses OIDC to redirect users to Keycloak for login
-
-### Roles
-
-- `ADMIN` - full platform access
-- `ANALYST` - can create, update, and manage governance records
-- `AUDITOR` - read-only access for verification and review
-
-### Current backend RBAC rules
-
-- `GET /api/v1/assets/**` -> `ADMIN`, `ANALYST`, `AUDITOR`
-- `POST /api/v1/assets/**` -> `ADMIN`, `ANALYST`
-- `PUT /api/v1/assets/**` -> `ADMIN`, `ANALYST`
-- `DELETE /api/v1/assets/**` -> `ADMIN`, `ANALYST`
-- `GET /api/v1/auth/me` -> any authenticated user
-
 ## Local Development Setup
 
 ### Prerequisites
@@ -166,7 +241,7 @@ Governance Core uses **Keycloak** as the local Identity Provider (IdP).
 - Node.js + npm
 - Docker
 
-## Run Keycloak locally
+### Run Keycloak locally
 
 Start Keycloak with persistent storage:
 
@@ -213,7 +288,7 @@ Key frontend client settings:
 - Valid post logout redirect URIs: `http://localhost:5173/*`
 - Web origins: `http://localhost:5173`
 
-## Backend configuration
+### Backend configuration
 
 The backend trusts JWTs from Keycloak using the issuer URI in:
 
@@ -230,14 +305,14 @@ spring:
           issuer-uri: http://localhost:8081/realms/governance-core
 ```
 
-## Run the backend
+### Run the backend
 
 ```powershell
 cd governancecore
 .\gradlew.bat bootRun --args='--spring.profiles.active=local'
 ```
 
-## Run the frontend
+### Run the frontend
 
 ```powershell
 cd governancecore-frontend
@@ -245,42 +320,46 @@ npm install
 npm run dev
 ```
 
-The frontend will be available at:
+Frontend URL:
 
 ```text
 http://localhost:5173
 ```
 
-## Authentication Flow
+## Documentation Map
 
-Current login flow:
+Use this README as the high-level project overview.
 
-1. User opens the React frontend
-2. The frontend auth gate checks whether the user is authenticated
-3. If not, the frontend redirects the user to Keycloak
-4. Keycloak authenticates the user and issues tokens
-5. Keycloak redirects the user back to the frontend
-6. The frontend uses the authenticated session to call the protected backend
-7. Spring Security validates the JWT and applies RBAC rules
+Use the docs below for deeper design context:
 
-## Useful Endpoints
+### Backend / IAM / governance docs
 
-- `GET /api/v1/assets`
-- `POST /api/v1/assets`
-- `GET /api/v1/auth/me`
+- `governancecore/docs/DESIGN_DECISIONS.md`
+  - project boundaries, IAM scope, sequencing decisions
+- `governancecore/docs/security-foundation-phase-1.md`
+  - current authentication and authorization foundation
+- `governancecore/docs/user-workflows-&-role-model.md`
+  - roles, access lifecycle direction, and JML framing
+- `governancecore/docs/compliance-framework-mapping.md`
+  - control and compliance alignment
+
+### Frontend docs
+
+- `governancecore-frontend/docs/ui-architecture.md`
+  - frontend structure and auth/UI flow
+- `governancecore-frontend/docs/design-decisions-frontend.md`
+  - frontend architectural decisions and tradeoffs
 
 ## Roadmap
 
-| Phase | Area | Description |
-|---|---|---|
-| 1 | AssetSubdomain | Asset inventory foundation |
-| 2 | Security Foundation | Keycloak + Spring Security + OIDC frontend login |
-| 3 | RiskSubdomain | Risk register and scoring |
-| 4 | ControlSubdomain | Control catalog and traceability |
-| 5 | EvidenceSubdomain | Evidence records and linkage |
-| 6 | IAMSubdomain | Access assignments, reviews, and workflows |
-| 7 | Reporting | Audit-ready traceability reports |
-| 8 | Deployment | Containerized local and deployment setup |
+The planned evolution of the project is:
+
+1. finish the security and role-aware UI foundation cleanly
+2. add audit logging for security and governance actions
+3. add access lifecycle workflows such as role assignment and revocation
+4. simulate provisioning and deprovisioning flows
+5. add richer admin and audit views after backend workflows exist
+6. extend the broader governance domain with risks, controls, evidence, and reporting
 
 ## Project Status
 
