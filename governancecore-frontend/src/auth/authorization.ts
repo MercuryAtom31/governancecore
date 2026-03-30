@@ -12,7 +12,21 @@ import type { AuthUser } from "./auth.types";
 // -Improve type safety
 const MANAGER_ROLES = ["ADMIN", "ANALYST"] as const;
 
+// We export a function called "hasRole" that takes:
+// a user (which can be an AuthUser OR null)
+// a role (a string)
+// and returns a boolean (true or false).
+
+// | --> "allowed types" (design time)
+// || --> "logical condition" (runtime)
 export function hasRole(user: AuthUser | null, role: string): boolean {
+// If the user exists, check if their roles include the given role.
+// If the user does not exist, return false.
+
+// user?.roles
+// This is optional chaining (?.)
+//   It means:
+// "Only access roles if user is NOT null"
   return user?.roles.includes(role) ?? false;
 }
 
