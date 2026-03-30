@@ -1,20 +1,14 @@
 import "./AssetListPage.css";
-import Card from "../../../ui/Card";
-// This imports the useCurrentUser hook to access the current user's information, including their roles, which is used to determine if they can manage assets.
+import { canManageAssets } from "../../../auth/authorization";
 import { useCurrentUser } from "../../../auth/useCurrentUser";
+import Card from "../../../ui/Card";
 import AddAssetModal from "../components/AddAssetModal";
 import { useAssets } from "../hooks/useAssets";
 
 export default function AssetListPage() {
   const { assets, loading, error, addAsset } = useAssets();
-  // Call the function useCurrentUser(), and take only the currentUser value from what it returns.
-  // Get the current user's information, including their roles, to determine if they have permission to manage assets.
   const { currentUser } = useCurrentUser();
-  // Determine if the current user has the "ADMIN" or "ANALYST" role, which grants them permission to manage assets.
-  // This is used to conditionally render the asset creation form and restrict access for read-only users.
-  // This checks whether the roles array contains "ADMIN", etc.
-  const canManageAssets =
-    currentUser?.roles.includes("ADMIN") || currentUser?.roles.includes("ANALYST");
+  const userCanManageAssets = canManageAssets(currentUser);
 
   return (
     <div className="assets-page">
@@ -25,18 +19,16 @@ export default function AssetListPage() {
           governance lifecycle.
         </p>
       </div>
-      {/* Conditionally render the asset creation form based on the user's permissions.
-      If the user can manage assets, show the AddAssetModal; otherwise, show a read-only message.
-      This is called conditional rendering with a ternary operator.
-      */}
-      {canManageAssets ? (
+
+      {userCanManageAssets ? (
         <Card className="assets-page__form-card">
           <AddAssetModal onCreate={addAsset} />
         </Card>
       ) : (
         <Card className="assets-page__form-card assets-page__read-only-card">
           <p className="assets-page__read-only-message">
-            Your current role is read-only. You can review assets, but only analysts and admins can create them.
+            Your current role is read-only. You can review assets, but only
+            analysts and admins can create them.
           </p>
         </Card>
       )}
