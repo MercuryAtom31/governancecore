@@ -19,6 +19,9 @@ const MANAGER_ROLES = ["ADMIN", "ANALYST"] as const;
 
 // | --> "allowed types" (design time)
 // || --> "logical condition" (runtime)
+
+// This function checks if the user has a specific role defined in the MANAGER_ROLES array.
+// It uses optional chaining (?.) to safely access the roles property of the user object, and the nullish coalescing operator (??) to return false if the user is null or if the roles property is undefined.
 export function hasRole(user: AuthUser | null, role: string): boolean {
 // If the user exists, check if their roles include the given role.
 // If the user does not exist, return false.
@@ -30,6 +33,7 @@ export function hasRole(user: AuthUser | null, role: string): boolean {
   return user?.roles.includes(role) ?? false;
 }
 
+// This function checks if the user has any of the roles specified in the "roles" array.
 export function hasAnyRole(user: AuthUser | null, roles: readonly string[]): boolean {
   // If the user is null, they have no roles, so return false.
   if (!user) {
@@ -42,10 +46,17 @@ export function hasAnyRole(user: AuthUser | null, roles: readonly string[]): boo
   return roles.some((role) => user.roles.includes(role));
 }
 
+// This function checks if the user has the necessary roles to manage assets.
 export function canManageAssets(user: AuthUser | null): boolean {
   return hasAnyRole(user, MANAGER_ROLES);
 }
 
+// This function checks if the user is a read-only user, which means they do not have the necessary roles to manage assets.
 export function isReadOnlyUser(user: AuthUser | null): boolean {
   return !canManageAssets(user);
 }
+
+
+// This whole file is about defining the authorization logic for our frontend application.
+// It provides functions to check if a user has certain roles or permissions, which can then be used throughout the app to conditionally render UI elements 
+// or restrict access to certain features based on the user's role.
