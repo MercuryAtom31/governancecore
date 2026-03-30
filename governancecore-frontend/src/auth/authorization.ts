@@ -1,5 +1,12 @@
 import type { AuthUser } from "./auth.types";
 
+// With "as const", we are telling TypeScript:
+// "Treat these values as fixed, exact, and read-only."
+// Why we use it?
+// -Prevent typos in roles
+// -Enforce strict RBAC logic
+// -Make arrays immutable
+// -Improve type safety
 const MANAGER_ROLES = ["ADMIN", "ANALYST"] as const;
 
 export function hasRole(user: AuthUser | null, role: string): boolean {
