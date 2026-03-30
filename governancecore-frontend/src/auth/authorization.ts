@@ -1,3 +1,6 @@
+// "import type" helps to avoid circular dependencies and ensures that we are only importing types, not actual code.
+// In other words, it tells TypeScript that we only care about the shape of the data (the type) and not any runtime behavior or values from the module. 
+// This can help with performance and maintainability, especially in larger codebases where circular dependencies can be an issue.
 import type { AuthUser } from "./auth.types";
 
 // With "as const", we are telling TypeScript:
