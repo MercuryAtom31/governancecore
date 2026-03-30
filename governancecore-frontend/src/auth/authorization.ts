@@ -31,10 +31,14 @@ export function hasRole(user: AuthUser | null, role: string): boolean {
 }
 
 export function hasAnyRole(user: AuthUser | null, roles: readonly string[]): boolean {
+  // If the user is null, they have no roles, so return false.
   if (!user) {
     return false;
   }
-
+  // Check if any of the roles in the "roles" array are included in the user's roles.
+  // the keyword "some" is an array method that returns true if at least one element in the array satisfies the provided testing function.
+  // The keyword "includes" is an array method that checks if a certain value exists in the array and returns true or false accordingly.
+  // The difference between "some" and "includes" is that "some" allows you to test a condition on each element of the array, while "includes" checks for the presence of a specific value in the array.
   return roles.some((role) => user.roles.includes(role));
 }
 
