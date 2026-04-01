@@ -19,7 +19,6 @@ export default function AssetListPage() {
           governance lifecycle.
         </p>
       </div>
-
       {userCanManageAssets ? (
         <Card className="assets-page__form-card">
           <AddAssetModal onCreate={addAsset} />
@@ -32,19 +31,33 @@ export default function AssetListPage() {
           </p>
         </Card>
       )}
-
+      {/* The following line means that if the data is still loading,
+      it will show "Loading...".
+      If there is an error, it will display the error message.
+      If there are no assets and it's not loading, it will show a message about assets being the foundation of governance.
+      If there are assets, it will display them in a grid.
+      The && mean "and"*/}
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
-
       {!loading && assets.length === 0 && (
         <p className="assets-page__empty">
           Assets form the foundation of your governance lifecycle.
         </p>
       )}
-
+      // The following code means that if it's not loading and there are assets,
+      it will display them in a grid. // Each asset will be displayed as a card
+      with its name, owner, type, classification, and description (if
+      available).
       {!loading && assets.length > 0 && (
         <ul className="assets-page__grid">
+          {/* .map() is a JavaScript array method that:
+          takes an array, loops through each element, returns a new array.
+          Here it says:
+          For each asset in the assets array, create a new list item (<li>) that contains a card with the asset's details.*/}
           {assets.map((asset) => (
+            // key is a unique identifier for each item in the list, which helps React optimize rendering.
+            // it is used to identify which items have changed, are added, or are removed.
+            // In this case, we use asset.assetId as the key for each asset card.
             <li key={asset.assetId}>
               <Card className="asset-card">
                 <div className="asset-card__header">
