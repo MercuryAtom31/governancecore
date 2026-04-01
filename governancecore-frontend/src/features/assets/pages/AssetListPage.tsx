@@ -58,6 +58,7 @@ export default function AssetListPage() {
             // key is a unique identifier for each item in the list, which helps React optimize rendering.
             // it is used to identify which items have changed, are added, or are removed.
             // In this case, we use asset.assetId as the key for each asset card.
+            // If it detects that an asset with the same key has changed, it will only re-render that specific card instead of the entire list, improving performance.
             <li key={asset.assetId}>
               <Card className="asset-card">
                 <div className="asset-card__header">
