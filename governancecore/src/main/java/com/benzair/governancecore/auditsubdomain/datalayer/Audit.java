@@ -10,7 +10,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
-import jakarta.persistence.PreUpdate;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -36,26 +35,44 @@ public class Audit {
     @Embedded
     private AuditIdentifier auditIdentifier;
     
-    @Column (nullable = false)
-    private String name;
+    // The user who performed the action.
+    @Column(nullable = false)
+    private String actor;
     
-    @Column (nullable = false)
-    private String user;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private AuditAction action;
     
+    // The domain type affected (ASSET, RISK, CONTROL, EVIDENCE).
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, name = "entity_type")
     private EntityType entityType;
 
-    @Column (nullable = false)
+    // The ID of the specific resource instance.
+    @Column(nullable = false)
     private String entityId;
 
     @Column (nullable = false, updatable = false, name = "utc_timestamp")
     private Instant utcTimestamp;
     
     // The outcome of the audited action (e.g., SUCCESS, FAILURE, DENIED)
-    @Enumerated(EnumType.STRING) // This annotation is used when you want to store the enum as a string in the database.
-    @Column
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
     private AuditOutcome outcome;
+
+    // The origin IP address of the request.
+    @Column(name = "source_ip", length = 45)
+    private String sourceIp;
+
+    @PrePersist
+    public void onCreate() {
+        if (auditIdentifier == null) {
+            auditIdentifier = new AuditIdentifier();
+        }
+        if (utcTimestamp == null) {
+            utcTimestamp = Instant.now();
+        }
+    }
     
 }
 
@@ -67,6 +84,4 @@ Each audit record should answer:
  from where,
  with what result,
  and under which request context.
-
-
 */
