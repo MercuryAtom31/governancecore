@@ -58,3 +58,15 @@ public class Audit {
     private AuditOutcome outcome;
     
 }
+
+/*
+Each audit record should answer:
+ who did what,
+ to which entity,
+ when,
+ from where,
+ with what result,
+ and under which request context.
+
+
+*/
