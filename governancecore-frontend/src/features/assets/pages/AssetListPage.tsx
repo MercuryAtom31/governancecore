@@ -44,10 +44,10 @@ export default function AssetListPage() {
           Assets form the foundation of your governance lifecycle.
         </p>
       )}
-      // The following code means that if it's not loading and there are assets,
+      {/* The following code means that if it's not loading and there are assets,
       it will display them in a grid. // Each asset will be displayed as a card
       with its name, owner, type, classification, and description (if
-      available).
+      available). */}
       {!loading && assets.length > 0 && (
         <ul className="assets-page__grid">
           {/* .map() is a JavaScript array method that:
