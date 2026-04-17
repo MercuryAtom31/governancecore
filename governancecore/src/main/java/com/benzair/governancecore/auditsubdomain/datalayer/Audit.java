@@ -18,7 +18,6 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import java.time.Instant;
 
-
 @Entity
 @Table(name = "audits")
 @Getter
@@ -73,7 +72,6 @@ public class Audit {
             utcTimestamp = Instant.now();
         }
     }
-    
 }
 
 /*

@@ -8,7 +8,7 @@ It is being built as a practical system that brings together:
 - security and compliance workflows
 - role-based access control
 - identity-aware frontend and backend behavior
-- future access lifecycle and audit capabilities
+- future access lifecycle, PIM (Privileged Identity Management), and audit capabilities
 
 It does **not** try to replace an Identity Provider. Instead, it uses **Keycloak** for authentication and focuses its own domain on governance, authorization, lifecycle changes, and auditability.
 
@@ -60,7 +60,7 @@ Governance Core currently consists of:
 - enforcing role-based access in the application
 - exposing trusted current-user data to the frontend
 - reflecting permissions in the UI
-- evolving toward access lifecycle and audit workflows
+- evolving toward access lifecycle, PIM, and audit workflows
 
 This boundary is intentional. Governance Core is an IAM-aware governance application, not a replacement for the IdP.
 
@@ -193,6 +193,28 @@ The application currently recognizes three business roles:
 - `AUDITOR` gets a read-only experience on the asset page
 
 The backend remains the security boundary. The frontend reflects permissions for clarity and usability.
+
+## Privileged Identity Management (PIM)
+
+The next IAM-focused feature I want to build is a simplified Privileged Identity Management (PIM) flow.
+
+This will let an `ANALYST` request temporary `ADMIN` access, let an `ADMIN` approve or reject the request, and grant time-limited elevated access for a short duration.
+
+### Planned PIM flow
+
+- analyst requests `ADMIN` access from their profile page
+- admin reviews pending requests
+- admin approves or rejects the request
+- approved access is time-limited and expires automatically
+- every step is written to the audit trail
+
+This feature is intended to demonstrate:
+
+- approval workflows
+- Just-In-Time (JIT) access
+- least privilege
+- access expiry and revocation
+- governance-grade auditability
 
 ## Technology Stack
 
@@ -355,11 +377,12 @@ Use the docs below for deeper design context:
 The planned evolution of the project is:
 
 1. finish the security and role-aware UI foundation cleanly
-2. add audit logging for security and governance actions
-3. add access lifecycle workflows such as role assignment and revocation
-4. simulate provisioning and deprovisioning flows
-5. add richer admin and audit views after backend workflows exist
-6. extend the broader governance domain with risks, controls, evidence, and reporting
+2. pause the audit subdomain for the moment and implement PIM access requests and approvals
+3. add time-limited privileged access and automatic revocation
+4. return to audit logging for security and governance actions
+5. simulate provisioning and deprovisioning flows
+6. add richer admin and audit views after backend workflows exist
+7. extend the broader governance domain with risks, controls, evidence, and reporting
 
 ## Project Status
 
