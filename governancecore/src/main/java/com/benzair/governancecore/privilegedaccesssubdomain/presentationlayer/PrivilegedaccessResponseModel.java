@@ -1,5 +1,5 @@
 ﻿package com.benzair.governancecore.privilegedaccesssubdomain.presentationlayer;
 
-public class PrivilegedaccessResponseModel {
+public class PrivilegedAccessResponseModel {
     
 }

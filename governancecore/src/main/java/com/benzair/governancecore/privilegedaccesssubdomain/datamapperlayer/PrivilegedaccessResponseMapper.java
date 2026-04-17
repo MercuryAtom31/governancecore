@@ -1,5 +1,5 @@
 ﻿package com.benzair.governancecore.privilegedaccesssubdomain.datamapperlayer;
 
-public class PrivilegedaccessResponseMapper {
+public class PrivilegedAccessResponseMapper {
     
 }

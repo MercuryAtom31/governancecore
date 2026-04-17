@@ -1,5 +1,5 @@
 ﻿package com.benzair.governancecore.privilegedaccesssubdomain.businesslayer;
 
-public class PrivilegedaccessServiceImpl {
+public class PrivilegedAccessServiceImpl {
     
 }
