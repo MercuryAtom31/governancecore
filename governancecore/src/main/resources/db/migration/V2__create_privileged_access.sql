@@ -9,5 +9,23 @@ CREATE TABLE privileged_access (
     revoked_at TIMESTAMP
 );
 
+-- The following indexes are created to optimize queries on target_user_id and expires_at columns
+-- These indexes will improve the performance of queries that filter by target_user_id and expires_at, which are common in privileged access management scenarios.
 CREATE INDEX idx_privileged_access_target_user_id ON privileged_access(target_user_id);
 CREATE INDEX idx_privileged_access_expires_at ON privileged_access(expires_at);
+
+
+-- How to create a table from an entity class?
+
+-- When you look at an entity class, read it like this:
+
+-- What is the table name?
+-- What is the primary key?
+-- What fields need columns?
+-- What are the column names?
+-- Which columns cannot be null?
+-- Which columns must be unique?
+-- What SQL data type matches each Java type?
+-- Are there embedded objects that become columns too?
+-- Are there timestamps or audit fields?
+-- Which columns should be indexed?
