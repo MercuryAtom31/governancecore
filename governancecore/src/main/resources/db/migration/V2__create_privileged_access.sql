@@ -4,9 +4,9 @@ CREATE TABLE privileged_access (
     target_user_id VARCHAR(255) NOT NULL,
     role VARCHAR(50) NOT NULL,
     approved_by VARCHAR(255) NOT NULL,
-    granted_at TIMESTAMP NOT NULL,
-    expires_at TIMESTAMP NOT NULL,
-    revoked_at TIMESTAMP
+    granted_at TIMESTAMPTZ NOT NULL,
+    expires_at TIMESTAMPTZ NOT NULL,
+    revoked_at TIMESTAMPTZ
 );
 
 -- The following indexes are created to optimize queries on target_user_id and expires_at columns
