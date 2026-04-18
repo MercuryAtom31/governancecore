@@ -29,3 +29,8 @@ CREATE INDEX idx_privileged_access_expires_at ON privileged_access(expires_at);
 -- Are there embedded objects that become columns too?
 -- Are there timestamps or audit fields?
 -- Which columns should be indexed?
+
+-- Used TIMESTAMPTZ instead of TIMESTAMP to ensure all timestamps are stored with time zone awareness (UTC).
+-- This is critical for security, audit, and IAM workflows where events may occur across different systems and regions.
+-- TIMESTAMPTZ guarantees consistent time comparison, prevents ambiguity, and ensures accurate ordering of events
+-- (e.g., access granted, expired, or revoked), which is essential for audit logs and forensic analysis.
