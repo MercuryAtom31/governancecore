@@ -1,4 +1,4 @@
-﻿package com.benzair.governancecore.privilegedaccesssubdomain.datalayer;
+package com.benzair.governancecore.privilegedaccesssubdomain.datalayer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
@@ -15,6 +15,6 @@ public class PrivilegedAccessIdentifier {
     private String privilegedAccessId;
 
     public PrivilegedAccessIdentifier() {
-        this.privilegedAccessId = UUID.randomUUID();
+        this.privilegedAccessId = UUID.randomUUID().toString();
     }
 }
