@@ -1,4 +1,4 @@
-﻿package com.benzair.governancecore.privilegedaccesssubdomain.businesslayer;
+package com.benzair.governancecore.privilegedaccesssubdomain.businesslayer;
 
 public interface PrivilegedAccessService {
     

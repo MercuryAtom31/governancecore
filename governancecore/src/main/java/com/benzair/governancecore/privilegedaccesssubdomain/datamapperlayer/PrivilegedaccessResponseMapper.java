@@ -1,4 +1,4 @@
-﻿package com.benzair.governancecore.privilegedaccesssubdomain.datamapperlayer;
+package com.benzair.governancecore.privilegedaccesssubdomain.datamapperlayer;
 
 public class PrivilegedAccessResponseMapper {
     
