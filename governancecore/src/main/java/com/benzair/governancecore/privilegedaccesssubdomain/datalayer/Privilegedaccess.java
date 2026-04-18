@@ -26,28 +26,36 @@ import lombok.Setter;
 @Builder
 public class PrivilegedAccess {
 
+    // Internal database primary key.
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    // Public/business ID that identifies the privileged access.
     @Embedded
     private PrivilegedAccessIdentifier privilegedAccessIdentifier;
 
+    // This is the user who is being granted privileged access.
     @Column(name = "target_user_id", nullable = false)
     private String targetUserId;
 
+    // This is the privileged role being granted (for example, ADMIN).
     @Column(name = "role", nullable = false)
     private String role;
 
+    // This is the approver who authorized the privileged access.
     @Column(name = "approved_by", nullable = false)
     private String approvedBy;
 
+    // This is when the privileged access becomes active.
     @Column(name = "granted_at", nullable = false, updatable = false)
     private Instant grantedAt;
 
+    // This is when the privileged access automatically expires.
     @Column(name = "expires_at", nullable = false)
     private Instant expiresAt;
 
+    // This is when the privileged access was manually revoked (if revoked early).
     @Column(name = "revoked_at")
     private Instant revokedAt;
 

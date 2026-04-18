@@ -1,4 +1,4 @@
-package com.benzair.governancecore.privilegedaccesssubdomain.datalayer;
+﻿package com.benzair.governancecore.privilegedaccesssubdomain.datalayer;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
