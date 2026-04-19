@@ -1,5 +1,10 @@
 package com.benzair.governancecore.privilegedaccesssubdomain.datalayer;
 
-public interface PrivilegedAccessRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+import com.benzair.governancecore.assetsubdomain.datalayer.Asset;
+
+public interface PrivilegedAccessRepository extends JpaRepository<PrivilegedAccess, UUID> {
     
+    Optional<PrivilegedAccess> findByPrivilegedAccessIdentifier_PrivilegedAccessId(UUID privilegedAccessId);
 }
