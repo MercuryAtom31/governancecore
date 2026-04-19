@@ -1,6 +1,6 @@
 package com.benzair.governancecore.assetsubdomain.presentationlayer;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import com.benzair.governancecore.assetsubdomain.datalayer.AssetType;
@@ -23,8 +23,8 @@ public class AssetResponseModel {
     private AssetType assetType;
     private DataClassification classification;
     private String description;
-    private LocalDateTime createdAt; // Used for auditing and tracking when the asset was created.
-    private LocalDateTime updatedAt; // Used for auditing and tracking when the asset was last updated.
+    private Instant createdAt; // Used for auditing and tracking when the asset was created.
+    private Instant updatedAt; // Used for auditing and tracking when the asset was last updated.
 }
 
 /**
