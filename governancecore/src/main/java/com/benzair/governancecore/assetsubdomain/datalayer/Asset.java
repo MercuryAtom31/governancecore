@@ -1,5 +1,5 @@
 package com.benzair.governancecore.assetsubdomain.datalayer;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 import jakarta.persistence.Column;
@@ -59,16 +59,16 @@ public class Asset {
    private String description;
 
    @Column (nullable = false, updatable = false, name = "created_at") // This column cannot be updated after creation
-   private LocalDateTime createdAt;
+   private Instant createdAt;
 
    @Column (nullable = false, name = "updated_at") // This column will be updated every time the record is updated
-   private LocalDateTime updatedAt;
+   private Instant updatedAt;
 
    // @PrePersist runs right before JPA inserts a new Asset
    // @PrePersist runs only when that row is inserted the first time.
    @PrePersist // JPA annotation to specify that this method should be called before the entity is persisted (saved for the first time)
    private void prePersist() {
-      LocalDateTime now = LocalDateTime.now(); // Get the current time
+      Instant now = Instant.now(); // Get the current time in UTC
       createdAt = now; // Set createdAt to the current time when the entity is first persisted
       updatedAt = now; // Set updatedAt to the current time when the entity is first persisted
    
@@ -80,7 +80,7 @@ public class Asset {
 
    @PreUpdate // JPA annotation to specify that this method should be called before the entity is updated
    private void preUpdate() {
-      updatedAt = LocalDateTime.now(); // Update updatedAt to the current time whenever the entity is updated
+      updatedAt = Instant.now(); // Update updatedAt to the current time whenever the entity is updated
    }
 
 }
