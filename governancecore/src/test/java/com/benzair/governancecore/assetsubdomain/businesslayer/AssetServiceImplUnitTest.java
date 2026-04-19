@@ -1,6 +1,6 @@
 package com.benzair.governancecore.assetsubdomain.businesslayer;
 
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.UUID;
 
@@ -55,7 +55,7 @@ class AssetServiceImplUnitTest {
         "What must exist for this method to run successfully?"
         */
         UUID businessId = UUID.randomUUID();
-        LocalDateTime now = LocalDateTime.now();
+        Instant now = Instant.now();
 
         AssetRequestModel request = AssetRequestModel.builder()
                 .name("Customer API")
