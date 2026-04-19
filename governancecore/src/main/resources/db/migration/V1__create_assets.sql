@@ -6,6 +6,6 @@ CREATE TABLE assets (
     asset_type VARCHAR(50) NOT NULL,
     classification VARCHAR(50) NOT NULL,
     description TEXT,
-    created_at TIMESTAMP NOT NULL,
-    updated_at TIMESTAMP NOT NULL
+    created_at TIMESTAMPTZ NOT NULL,
+    updated_at TIMESTAMPTZ NOT NULL
 );
