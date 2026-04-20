@@ -1,24 +1,39 @@
 CREATE TABLE privileged_access (
     id UUID PRIMARY KEY,
     privileged_access_id VARCHAR(36) NOT NULL UNIQUE,
-    target_user_id VARCHAR(255) NOT NULL,
-    role VARCHAR(50) NOT NULL,
-    approved_by VARCHAR(255) NOT NULL,
-    granted_at TIMESTAMPTZ NOT NULL,
-    expires_at TIMESTAMPTZ NOT NULL,
-    revoked_at TIMESTAMPTZ
+    requester_user_id VARCHAR(255) NOT NULL,
+    requester_name VARCHAR(255) NOT NULL,
+    requester_current_role VARCHAR(50) NOT NULL,
+    role VARCHAR(20) NOT NULL,
+    duration_minutes VARCHAR(20) NOT NULL,
+    justification TEXT NOT NULL,
+    requested_at TIMESTAMPTZ NOT NULL,
+    status VARCHAR(30) NOT NULL,
+    granted_by_user_id VARCHAR(255),
+    granted_by_name VARCHAR(255),
+    approval_note TEXT,
+    granted_at TIMESTAMPTZ,
+    refused_at TIMESTAMPTZ,
+    refusal_reason TEXT,
+    expires_at TIMESTAMPTZ,
+    revoked_at TIMESTAMPTZ,
+    revoke_reason TEXT,
+    CONSTRAINT chk_privileged_access_role_admin
+        CHECK (role = 'ADMIN'),
+    CONSTRAINT chk_privileged_access_duration
+        CHECK (duration_minutes IN ('MINUTES_15', 'MINUTES_30', 'MINUTES_60')),
+    CONSTRAINT chk_privileged_access_status
+        CHECK (status IN ('REQUESTED', 'GRANTED', 'IN_USE', 'REFUSED', 'EXPIRED', 'REVOKED'))
 );
 
--- The following indexes are created to optimize queries on target_user_id and expires_at columns
--- These indexes will improve the performance of queries that filter by target_user_id and expires_at, which are common in privileged access management scenarios.
-CREATE INDEX idx_privileged_access_target_user_id ON privileged_access(target_user_id);
+-- Indexes tuned for common privileged access workflows and lifecycle checks.
+CREATE INDEX idx_privileged_access_requester_user_id ON privileged_access(requester_user_id);
+CREATE INDEX idx_privileged_access_status ON privileged_access(status);
 CREATE INDEX idx_privileged_access_expires_at ON privileged_access(expires_at);
-
+CREATE INDEX idx_privileged_access_requested_at ON privileged_access(requested_at);
 
 -- How to create a table from an entity class?
-
 -- When you look at an entity class, read it like this:
-
 -- What is the table name?
 -- What is the primary key?
 -- What fields need columns?
@@ -33,4 +48,4 @@ CREATE INDEX idx_privileged_access_expires_at ON privileged_access(expires_at);
 -- Used TIMESTAMPTZ instead of TIMESTAMP to ensure all timestamps are stored with time zone awareness (UTC).
 -- This is critical for security, audit, and IAM workflows where events may occur across different systems and regions.
 -- TIMESTAMPTZ guarantees consistent time comparison, prevents ambiguity, and ensures accurate ordering of events
--- (e.g., access granted, expired, or revoked), which is essential for audit logs and forensic analysis.
+-- (e.g., access granted, expired, refused, or revoked), which is essential for audit logs and forensic analysis.
