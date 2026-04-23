@@ -329,10 +329,31 @@ spring:
 
 ### Run the backend
 
+#### Option A - Persistent PostgreSQL mode (recommended)
+
+Set environment variables (PowerShell):
+
+```powershell
+$env:DB_URL="jdbc:postgresql://localhost:5432/governancecore"
+$env:DB_USERNAME="postgres"
+$env:DB_PASSWORD="postgres"
+```
+
+Then run:
+
+```powershell
+cd governancecore
+.\gradlew.bat bootRun
+```
+
+#### Option B - Local in-memory H2 mode (resets on restart)
+
 ```powershell
 cd governancecore
 .\gradlew.bat bootRun --args='--spring.profiles.active=local'
 ```
+
+Note: `local` uses in-memory H2 with `create-drop`, so created data disappears when the app restarts.
 
 ### Run the frontend
 
