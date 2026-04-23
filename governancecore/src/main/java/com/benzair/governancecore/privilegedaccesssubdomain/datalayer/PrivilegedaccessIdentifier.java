@@ -13,9 +13,9 @@ import lombok.Data;
 public class PrivilegedAccessIdentifier {
 
     @Column(name = "privileged_access_id", nullable = false, unique = true)
-    private String privilegedAccessId;
+    private UUID privilegedAccessId;
 
     public PrivilegedAccessIdentifier() {
-        this.privilegedAccessId = UUID.randomUUID().toString();
+        this.privilegedAccessId = UUID.randomUUID();
     }
 }
