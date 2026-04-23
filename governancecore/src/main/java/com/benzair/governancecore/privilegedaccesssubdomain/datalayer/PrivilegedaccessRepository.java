@@ -9,7 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface PrivilegedAccessRepository extends JpaRepository<PrivilegedAccess, UUID> {
     
-    Optional<PrivilegedAccess> findByPrivilegedAccessIdentifier_PrivilegedAccessId(String privilegedAccessId);
+    Optional<PrivilegedAccess> findByPrivilegedAccessIdentifier_PrivilegedAccessId(UUID privilegedAccessId);
 
     List<PrivilegedAccess> findByStatus(PrivilegedAccessStatus status);
 
