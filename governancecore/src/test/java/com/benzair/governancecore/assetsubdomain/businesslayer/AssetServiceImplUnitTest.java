@@ -58,7 +58,8 @@ class AssetServiceImplUnitTest {
         Instant now = Instant.now();
 
         AssetRequestModel request = AssetRequestModel.builder()
-                .name("Customer API")
+                .firstName("Customer")
+                .lastName("API")
                 .owner("Platform Team")
                 .assetType(AssetType.APPLICATION)
                 .classification(DataClassification.CONFIDENTIAL)
@@ -66,7 +67,8 @@ class AssetServiceImplUnitTest {
                 .build();
 
         Asset mappedAsset = Asset.builder()
-                .name(request.getName())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .owner(request.getOwner())
                 .assetType(request.getAssetType())
                 .classification(request.getClassification())
@@ -76,7 +78,8 @@ class AssetServiceImplUnitTest {
         Asset savedAsset = Asset.builder()
                 .id(UUID.randomUUID())
                 .assetIdentifier(new AssetIdentifier(businessId))
-                .name(request.getName())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .owner(request.getOwner())
                 .assetType(request.getAssetType())
                 .classification(request.getClassification())
@@ -87,7 +90,8 @@ class AssetServiceImplUnitTest {
 
         AssetResponseModel expected = AssetResponseModel.builder()
                 .assetId(businessId)
-                .name(request.getName())
+                .firstName(request.getFirstName())
+                .lastName(request.getLastName())
                 .owner(request.getOwner())
                 .assetType(request.getAssetType())
                 .classification(request.getClassification())
@@ -119,7 +123,8 @@ class AssetServiceImplUnitTest {
         // ARRANGE
         List<Asset> assets = List.of(
                 Asset.builder()
-                        .name("Server 1")
+                        .firstName("Server")
+                        .lastName("1")
                         .owner("IT department")
                         .assetType(AssetType.SERVER)
                         .classification(DataClassification.CONFIDENTIAL)
@@ -127,7 +132,8 @@ class AssetServiceImplUnitTest {
                         .build(),
 
                 Asset.builder()
-                        .name("Server 2")
+                        .firstName("Server")
+                        .lastName("2")
                         .owner("IT department")
                         .assetType(AssetType.SERVER)
                         .classification(DataClassification.CONFIDENTIAL)
@@ -137,7 +143,8 @@ class AssetServiceImplUnitTest {
 
         List<AssetResponseModel> assetResponseModels = List.of(
                 AssetResponseModel.builder()
-                        .name("Server 1")
+                        .firstName("Server")
+                        .lastName("1")
                         .owner("IT department")
                         .assetType(AssetType.SERVER)
                         .classification(DataClassification.CONFIDENTIAL)
@@ -145,7 +152,8 @@ class AssetServiceImplUnitTest {
                         .build(),
 
                 AssetResponseModel.builder()
-                        .name("Server 2")
+                        .firstName("Server")
+                        .lastName("2")
                         .owner("IT department")
                         .assetType(AssetType.SERVER)
                         .classification(DataClassification.CONFIDENTIAL)
