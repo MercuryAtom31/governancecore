@@ -41,9 +41,13 @@ public class PrivilegedAccess {
     @Column(name = "requester_user_id", nullable = false)
     private String requesterUserId;
 
-    // This is the requester display name at request time.
-    @Column(name = "requester_name", nullable = false)
-    private String requesterName;
+    // This is the requester first name at request time.
+    @Column(name = "requester_first_name", nullable = false)
+    private String requesterFirstName;
+
+    // This is the requester last name at request time.
+    @Column(name = "requester_last_name", nullable = false)
+    private String requesterLastName;
 
     // This is the requester's current role at request time.
     @Column(name = "requester_current_role", nullable = false)
@@ -76,9 +80,13 @@ public class PrivilegedAccess {
     @Column(name = "granted_by_user_id")
     private String grantedByUserId;
 
-    // Approver display name when request is granted.
-    @Column(name = "granted_by_name")
-    private String grantedByName;
+    // Approver first name when request is granted.
+    @Column(name = "granted_by_first_name")
+    private String grantedByFirstName;
+
+    // Approver last name when request is granted.
+    @Column(name = "granted_by_last_name")
+    private String grantedByLastName;
 
     // Optional note provided by approver.
     @Column(name = "approval_note", length = 1000)
