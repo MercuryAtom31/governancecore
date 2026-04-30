@@ -16,9 +16,12 @@ import com.benzair.governancecore.assetsubdomain.datalayer.DataClassification;
 @Builder
 public class AssetRequestModel {
     
-    // Validation annotation to ensure that the name field is not blank
+    // Validation annotation to ensure that the firstName field is not blank
     @NotBlank
-    private String name;
+    private String firstName;
+
+    @NotBlank
+    private String lastName;
 
     @NotBlank
     private String owner;
@@ -40,7 +43,8 @@ public class AssetRequestModel {
 
     In ISMS terms, it is the "new/edited asset form data":
 
-    -asset name
+    -asset first name
+    -asset last name
     -owner
     -asset type
 */
