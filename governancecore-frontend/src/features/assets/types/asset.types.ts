@@ -31,7 +31,8 @@ export type AssetType =
   // These must match the JSON returned.
 export interface Asset { 
     assetId: string; 
-    name: string; 
+  firstName: string;
+  lastName: string;
     assetType: AssetType; 
     owner: string; 
     classification: DataClassification; 
@@ -42,7 +43,8 @@ export interface Asset {
 
 // Request interface (CreateAssetRequest) → based on AssetRequestModel
 export interface CreateAssetRequest { 
-    name: string; 
+  firstName: string;
+  lastName: string;
     assetType: AssetType; 
     owner: string; 
     classification: DataClassification; 
