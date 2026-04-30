@@ -72,7 +72,8 @@ public class AssetServiceImpl implements AssetService {
                 .orElseThrow(() -> new ResourceNotFoundException("Asset not found with assetId: " + assetId));
 
         // Updating fields of existing asset with the its new content.
-        existingAsset.setName(request.getName());
+        existingAsset.setFirstName(request.getFirstName());
+        existingAsset.setLastName(request.getLastName());
         existingAsset.setOwner(request.getOwner());
         existingAsset.setAssetType(request.getAssetType());
         existingAsset.setClassification(request.getClassification());
