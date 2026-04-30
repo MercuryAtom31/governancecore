@@ -18,7 +18,8 @@ import lombok.Data;
 public class AssetResponseModel {
 
     private UUID assetId; // This is the business ID (external uuid) that we use in the service layer, separate from the database primary key.
-    private String name;
+    private String firstName;
+    private String lastName;
     private String owner;
     private AssetType assetType;
     private DataClassification classification;
