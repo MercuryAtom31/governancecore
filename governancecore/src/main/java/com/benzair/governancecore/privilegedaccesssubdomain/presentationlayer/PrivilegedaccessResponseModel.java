@@ -19,14 +19,16 @@ import lombok.NoArgsConstructor;
 public class PrivilegedAccessResponseModel {
 
     private UUID privilegedAccessId;
-    private String requesterName;
+    private String requesterFirstName;
+    private String requesterLastName;
     private String requesterCurrentRole;
     private PrivilegedAccessRole role;
     private PrivilegedAccessDuration durationMinutes;
     private String justification;
     private Instant requestedAt;
     private PrivilegedAccessStatus status;
-    private String grantedByName;
+    private String grantedByFirstName;
+    private String grantedByLastName;
     private Instant grantedAt;
     private Instant refusedAt;
     private Instant expiresAt;
