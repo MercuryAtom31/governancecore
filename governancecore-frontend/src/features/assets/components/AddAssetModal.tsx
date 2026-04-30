@@ -16,7 +16,8 @@ type Props = {
 };
 
 export default function AddAssetModal({ onCreate }: Props) {
-  const [name, setName] = useState("");
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
   const [owner, setOwner] = useState("");
   const [assetType, setAssetType] = useState<AssetType>("APPLICATION");
   const [classification, setClassification] =
@@ -31,7 +32,8 @@ export default function AddAssetModal({ onCreate }: Props) {
 
     try {
       const payload: CreateAssetRequest = {
-        name,
+        firstName,
+        lastName,
         owner,
         assetType,
         classification,
@@ -41,7 +43,8 @@ export default function AddAssetModal({ onCreate }: Props) {
       await onCreate(payload);
 
       // reset form
-      setName("");
+      setFirstName("");
+      setLastName("");
       setOwner("");
       setAssetType("APPLICATION");
       setClassification("INTERNAL");
@@ -56,8 +59,15 @@ return (
     <h2 className="form-title">Add Asset</h2>
 
     <div className="form-fields">
-      <FormField label="Asset name">
-        <Input value={name} onChange={(e) => setName(e.target.value)} />
+      <FormField label="First name">
+        <Input
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+      </FormField>
+
+      <FormField label="Last name">
+        <Input value={lastName} onChange={(e) => setLastName(e.target.value)} />
       </FormField>
 
       <FormField label="Owner">
