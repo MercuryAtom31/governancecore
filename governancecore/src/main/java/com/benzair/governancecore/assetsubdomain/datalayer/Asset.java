@@ -41,8 +41,11 @@ public class Asset {
    private AssetIdentifier assetIdentifier; // This is the business ID (external uuid) that we use in the service layer, separate from the database primary key.
 
    // JPA annotation to specify that this column cannot be null
-   @Column (nullable = false)
-   private String name;
+   @Column(nullable = false, name = "first_name")
+   private String firstName;
+
+   @Column(nullable = false, name = "last_name")
+   private String lastName;
 
    @Column (nullable = false)
    private String owner;
