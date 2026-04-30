@@ -46,7 +46,7 @@ export default function AssetListPage() {
       )}
       {/* The following code means that if it's not loading and there are assets,
       it will display them in a grid. // Each asset will be displayed as a card
-      with its name, owner, type, classification, and description (if
+      with its first and last name, owner, type, classification, and description (if
       available). */}
       {!loading && assets.length > 0 && (
         <ul className="assets-page__grid">
@@ -62,7 +62,9 @@ export default function AssetListPage() {
             <li key={asset.assetId}>
               <Card className="asset-card">
                 <div className="asset-card__header">
-                  <h2 className="asset-card__title">{asset.name}</h2>
+                  <h2 className="asset-card__title">
+                    {`${asset.firstName} ${asset.lastName}`.trim()}
+                  </h2>
                   <p className="asset-card__owner">{asset.owner}</p>
                 </div>
 
