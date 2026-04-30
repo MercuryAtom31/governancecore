@@ -59,7 +59,8 @@ public class PrivilegedAccessServiceImpl implements PrivilegedAccessService {
         CurrentUserContext currentUser = getCurrentUserContext();
         PrivilegedAccess privilegedAccess = privilegedAccessRequestMapper.requestModelToEntity(privilegedAccessRequestModel);
         privilegedAccess.setRequesterUserId(currentUser.userId());
-        privilegedAccess.setRequesterName(currentUser.displayName());
+        privilegedAccess.setRequesterFirstName(currentUser.firstName());
+        privilegedAccess.setRequesterLastName(currentUser.lastName());
         privilegedAccess.setRequesterCurrentRole(currentUser.currentRole());
         privilegedAccess.setRole(PrivilegedAccessRole.ADMIN);
         PrivilegedAccess savedPrivilegedAccess = privilegedAccessRepository.save(privilegedAccess);
@@ -76,7 +77,8 @@ public class PrivilegedAccessServiceImpl implements PrivilegedAccessService {
         requireStatus(existingPrivilegedAccess, PrivilegedAccessStatus.REQUESTED, "Only requested access can be updated.");
 
         existingPrivilegedAccess.setRequesterUserId(currentUser.userId());
-        existingPrivilegedAccess.setRequesterName(currentUser.displayName());
+        existingPrivilegedAccess.setRequesterFirstName(currentUser.firstName());
+        existingPrivilegedAccess.setRequesterLastName(currentUser.lastName());
         existingPrivilegedAccess.setRequesterCurrentRole(currentUser.currentRole());
         existingPrivilegedAccess.setRole(PrivilegedAccessRole.ADMIN);
         existingPrivilegedAccess.setDurationMinutes(privilegedAccessRequestModel.getDurationMinutes());
@@ -94,7 +96,8 @@ public class PrivilegedAccessServiceImpl implements PrivilegedAccessService {
 
         Instant grantedAt = Instant.now();
         privilegedAccess.setGrantedByUserId(currentUser.userId());
-        privilegedAccess.setGrantedByName(currentUser.displayName());
+        privilegedAccess.setGrantedByFirstName(currentUser.firstName());
+        privilegedAccess.setGrantedByLastName(currentUser.lastName());
         privilegedAccess.setApprovalNote(null);
         privilegedAccess.setGrantedAt(grantedAt);
         privilegedAccess.setExpiresAt(grantedAt.plusSeconds(privilegedAccess.getDurationMinutes().getMinutes() * 60L));
@@ -192,10 +195,21 @@ public class PrivilegedAccessServiceImpl implements PrivilegedAccessService {
 
         String userId = firstNonBlank(jwt.getSubject(), jwt.getClaimAsString("preferred_username"));
         String displayName = firstNonBlank(
-                jwt.getClaimAsString("preferred_username"),
-                jwt.getClaimAsString("name"),
-                jwt.getClaimAsString("email"),
-                userId);
+            jwt.getClaimAsString("name"),
+            jwt.getClaimAsString("preferred_username"),
+            jwt.getClaimAsString("email"),
+            userId);
+        NameParts parsedNameParts = parseNameParts(displayName);
+        String firstName = firstNonBlank(
+            jwt.getClaimAsString("given_name"),
+            jwt.getClaimAsString("first_name"),
+            parsedNameParts.firstName(),
+            displayName);
+        String lastName = firstNonBlank(
+            jwt.getClaimAsString("family_name"),
+            jwt.getClaimAsString("last_name"),
+            parsedNameParts.lastName(),
+            firstName);
         String currentRole = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .filter(authority -> authority.startsWith("ROLE_"))
@@ -206,14 +220,33 @@ public class PrivilegedAccessServiceImpl implements PrivilegedAccessService {
         if (isBlank(userId)) {
             throw new InvalidInputException("Authenticated user ID is missing from the token.");
         }
-        if (isBlank(displayName)) {
-            throw new InvalidInputException("Authenticated user name is missing from the token.");
+        if (isBlank(firstName)) {
+            throw new InvalidInputException("Authenticated user first name is missing from the token.");
+        }
+        if (isBlank(lastName)) {
+            throw new InvalidInputException("Authenticated user last name is missing from the token.");
         }
         if (isBlank(currentRole)) {
             throw new InvalidInputException("Authenticated user role is missing from the token.");
         }
 
-        return new CurrentUserContext(userId, displayName, currentRole);
+        return new CurrentUserContext(userId, firstName, lastName, currentRole);
+    }
+
+    private NameParts parseNameParts(String fullName) {
+        if (isBlank(fullName)) {
+            return new NameParts(null, null);
+        }
+
+        String trimmed = fullName.trim();
+        int firstSpaceIndex = trimmed.indexOf(' ');
+        if (firstSpaceIndex < 0) {
+            return new NameParts(trimmed, null);
+        }
+
+        String firstName = trimmed.substring(0, firstSpaceIndex).trim();
+        String lastName = trimmed.substring(firstSpaceIndex + 1).trim();
+        return new NameParts(firstName, isBlank(lastName) ? null : lastName);
     }
 
     private String firstNonBlank(String... values) {
@@ -229,6 +262,9 @@ public class PrivilegedAccessServiceImpl implements PrivilegedAccessService {
         return value == null || value.isBlank();
     }
 
-    private record CurrentUserContext(String userId, String displayName, String currentRole) {
+    private record CurrentUserContext(String userId, String firstName, String lastName, String currentRole) {
+    }
+
+    private record NameParts(String firstName, String lastName) {
     }
 }
