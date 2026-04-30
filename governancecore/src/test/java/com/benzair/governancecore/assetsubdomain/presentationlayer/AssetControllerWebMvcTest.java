@@ -6,6 +6,7 @@ import com.benzair.governancecore.assetsubdomain.datalayer.DataClassification;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -23,6 +24,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @WebMvcTest(AssetController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class AssetControllerWebMvcTest {
     @Autowired
     private MockMvc mockMvc;
@@ -36,7 +38,8 @@ public class AssetControllerWebMvcTest {
         // ARRANGE
         List<AssetResponseModel> assets = List.of(
                 AssetResponseModel.builder()
-                        .name("Server 1")
+                .firstName("Server")
+                .lastName("1")
                         .owner("IT department")
                         .assetType(AssetType.SERVER)
                         .classification(DataClassification.CONFIDENTIAL)
@@ -52,7 +55,8 @@ public class AssetControllerWebMvcTest {
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.length()").value(1))
-                .andExpect(jsonPath("$[0].name").value("Server 1"))
+                .andExpect(jsonPath("$[0].firstName").value("Server"))
+                .andExpect(jsonPath("$[0].lastName").value("1"))
                 .andExpect(jsonPath("$[0].owner").value("IT department"));
 
         // ASSERT
